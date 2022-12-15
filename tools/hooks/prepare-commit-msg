@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# This commit message preparation hook is inspired on the one in ITK.
+# It only works for French locales, since the target tokens to find an
+# appropriate place for the instructions are written in French in this script.
+
+egrep-q() {
+  egrep "$@" >/dev/null 2>/dev/null
+}
+
+# First argument is file containing commit message.
+commit_msg="$1"
+
+# Check for extra instructions.
+egrep-q "^# Start commit messages" -- "$commit_msg" && return 0
+
+# Insert extra instructions.
+commit_msg_tmp="$commit_msg.$$"
+instructions='#\
+# Start commit messages with a standard prefix (and a space):\
+#   BUG:    - fix for runtime crash or incorrect result\
+#   COMP:   - compiler error or warning fix\
+#   DOC:    - documentation change\
+#   ENH:    - new functionality\
+#   PERF:   - performance improvement\
+#   STYLE:  - no logic impact (indentation, comments)\
+#   WIP:    - Work In Progress not ready for merge\
+#
+# The first line of the commit message should preferably be 72 characters
+# or less; the maximum allowed is 78 characters.
+#
+# Follow the first line commit summary with an empty line, then a detailed
+# description in one or more paragraphs.
+#' &&
+sed '/^# Sur la branche.*$/ a\
+'"$instructions"'
+/^# Pas actuellement sur une branche.*$/ a\
+'"$instructions"'
+' "$commit_msg" > "$commit_msg_tmp" &&
+mv "$commit_msg_tmp" "$commit_msg"
