@@ -18,7 +18,7 @@ echo 'Setting up git hooks...' &&
 git_dir=$(git rev-parse --git-dir) &&
 mkdir -p "$git_dir/hooks" &&
 cd "$git_dir/hooks" &&
-cp -ap "../../utils/hooks/." . &&
+cp -ap "../../tools/hooks/." . &&
 if ! test -e .git; then
 	git init -q || die 'Could not run git init for hooks.'
 fi &&
