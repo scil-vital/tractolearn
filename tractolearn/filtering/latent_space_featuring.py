@@ -4,8 +4,13 @@ import logging
 from os.path import join as pjoin
 
 import numpy as np
+import umap
+from matplotlib import pyplot as plt
+from matplotlib.markers import MarkerStyle
 from scipy.stats import mode
 from tqdm import tqdm
+
+from tractolearn.Logger import LoggerKeys
 from tractolearn.utils.layer_utils import PredictWrapper
 
 from tractolearn.filtering.latent_space_distance_informer import (
@@ -13,6 +18,10 @@ from tractolearn.filtering.latent_space_distance_informer import (
 )
 from tractolearn.tractoio.utils import (
     save_streamlines,
+)
+
+from tractolearn.visualization.plot_utils import (
+    generate_decoration_rc_parameters,
 )
 
 # fixme: FD
@@ -112,3 +121,104 @@ def filter_streamlines_only(
         )
 
     logger.info("Finished filtering streamlines into plausibles/implausibles.")
+
+
+def plot_latent_space(
+    latent_samples, classes, latent_space_dims, fname_root, rbx_classes=True
+):
+
+    logger.info("Plotting latent space...")
+
+    dpi = 300
+    figure_rc = {"figure": {"dpi": dpi}}
+
+    rc_parameters = generate_decoration_rc_parameters()
+    rc_parameters.update(figure_rc)
+
+    # Use the UMAP dimensionality reduction
+    logger.info("Computing UMAP dimensionality reduction...")
+
+    method = "umap"
+    filename = (
+        fname_root
+        + LoggerKeys.underscore.value
+        + method
+        + LoggerKeys.fname_extension_sep.value
+        + LoggerKeys.fname_extension_sep.plot_extension.value
+    )
+    reducer = umap.UMAP(random_state=42)
+    umap_results = reducer.fit_transform(latent_samples)
+
+    logger.info("Finished computing UMAP dimensionality reduction.")
+
+    logger.debug("Generating UMAP latent space plot...")
+
+    if rbx_classes:
+        # TODO avoid hard coding the classes?
+        non_right_classes = {
+            "AC": 1,
+            "AF_L": 2,
+            "CC_Fr_1": 4,
+            "CC_Fr_2": 5,
+            "CC_Oc": 6,
+            "CC_Pa": 7,
+            "CC_Pr_Po": 8,
+            "CC_Te": 9,
+            "CG_L": 10,
+            "FAT_L": 12,
+            "FPT_L": 14,
+            "FX_L": 16,
+            "ICP_L": 18,
+            "IFOF_L": 20,
+            "ILF_L": 22,
+            "MCP": 24,
+            "MdLF_L": 25,
+            "OR_ML_L": 27,
+            "PC": 29,
+            "POPT_L": 30,
+            "PYT_L": 32,
+            "SCP_L": 34,
+            "SLF_L": 36,
+            "UF_L": 38,
+        }
+        selected_classes = list(non_right_classes.items())[
+            :20
+        ]  # Select the first 20 non-right classes, we have 20 colors
+    else:
+        unique, counts = np.unique(classes, return_counts=True)
+        zip_unique_count = list(zip(unique, counts))
+        res = sorted(zip_unique_count, key=lambda x: x[1], reverse=True)
+        selected_classes = [(str(c), c) for c, count in res[:20]]
+
+    # TODO combine all CC classes in plot
+
+    fig = plt.figure(figsize=(12, 10))
+
+    # plot all plausible with black dots
+    mask = np.array(classes) != 0
+    plt.scatter(umap_results[mask, 0], umap_results[mask, 1], color=(0, 0, 0))
+
+    # plot implausible as black empty circles
+    mask = np.array(classes) == 0
+    m = MarkerStyle(marker="o", fillstyle="none")
+    plt.scatter(umap_results[mask, 0], umap_results[mask, 1], color=(0, 0, 0), marker=m)
+
+    # plot selected classes with colors
+    colors = list(plt.cm.tab20(np.arange(20)))
+    plt.gca().set_prop_cycle("color", colors)
+    for class_name, class_idx in selected_classes:
+        mask = np.array(classes) == class_idx
+        plt.scatter(umap_results[mask, 0], umap_results[mask, 1], label=class_name)
+
+    plt.legend()
+    plt.title("Latent space UMAP (latent dim={})".format(latent_space_dims))
+    plt.xlabel("z[0]")
+    plt.ylabel("z[1]")
+    fig.savefig(filename, bbox_inches="tight")
+    plt.close(fig)
+
+    logger.debug("Finished generating UMAP latent space plot to:\n{}".format(filename))
+
+    logger.info("Finished plotting latent space.")
+
+    return filename
