@@ -2,17 +2,14 @@ name: WIP
 
 on:
   pull_request:
-    types:
-      - opened
-      - edited
-      - labeled
-      - unlabeled
-      - synchronize
+    types:  [edited, labeled, opened, reopened, synchronize, unlabeled]
 
 jobs:
   WIP:
+    name: Manage pull requests
     runs-on: ubuntu-latest
     steps:
-      - uses: wow-actions/wip@v1
-        with:
+      - name: Prevent WIP PRs from being merged
+        uses: wow-actions/wip@v1
+        env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
