@@ -1,0 +1,21 @@
+name: label issue on body contents
+# See https://github.com/marketplace/actions/regex-issue-labeler
+
+on:
+  issues:
+    types: [opened, edited]
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: github/issue-labeler@v2.3
+      with:
+        # Secret token needed (not sure which permissions though)
+        repo-token: "${{ secrets.GITHUB_TOKEN }}"
+        # File with label/regex match dictionary
+        configuration-path: .github/labels.yml
+        # The issues opened before this date will be ignored
+        # not-before: 2020-12-24T00:00:00Z
+        # This can be increased if the dictionary undergoes a breaking change
+        enable-versioned-regex: 0
