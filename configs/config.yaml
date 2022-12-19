@@ -1,0 +1,53 @@
+#task: contrastive_lecun_classes
+task: ae
+# options: ae, contrastive_lecun_classes, ae_contrastive_lecun_classes, ae_triplet_classes, ae_triplet_hierarchical_classes
+
+# Model name (e.g. IncrFeatStridedConvFCUpsampReflectPadAE)
+model_name: IncrFeatStridedConvFCUpsampReflectPadAE
+
+trk_path:
+hdf5_path: "/media/fdumais/My_Passport/Acuity/Data/TractoinfernoExtended/dataset_tracto_inferno.hdf5"
+pickle_path: # "/media/fdumais/My_Passport/Acuity/Data/TractoinfernoExtended/HDF5_QBx/train/qbx_cluster_200/clusters_sets.pickle"
+rbx_classes: False
+
+# Reference anatomical filename (usually a t1.nii.gz or wm.nii.gz)
+ref_anat_fname: "/home/fdumais/Desktop/Data/finta_rbx_atlas/mni_masked.nii.gz"
+
+# Dataset name (e.g. `fibercup`, `ismrm2015_phantom`, etc.)
+dataset_name: mni_brain
+
+# Number of points for streamline resampling
+num_points: 256
+# Apply flip to streamlines randomly
+random_flip: True
+# Normalize streamlines to the volume's isocenter and volume
+normalize: False
+
+# Training parameters
+batch_size: 128  # not used for contrastive learning, see `contrastive_num_pairs`
+num_steps_per_train_epoch: 100
+num_steps_per_valid_epoch: 100
+contrastive_num_pairs: 96  # e.g. if this value is 4, there will be 4 positive pairs, 8 pairs total; batch size: 16
+contrastive_margin: 1.25
+contrastive_loss_weight: 400 # use 4000 for triplet and 400 for contrastive
+distance_function: "l2" # only use with triplet loss (options: l2, cosine_similarity)
+to_swap: False # only use with triplet loss
+epochs: 200
+data_in_memory: 204800
+
+# Auto-encoder common parameters
+latent_space_dims: 32
+
+# Log interval
+log_interval: 10
+
+# Weight's filename
+weights:
+# Visualization
+viz: False
+viz_num_batches: 10
+
+bundle_keys: "/home/fdumais/Desktop/Data/finta_rbx_atlas/rbx_atlas_v10.json"
+out_path: "/home/fdumais/Desktop/Acuity/tractolearn_logs/tractoinferno_hcp"
+
+num_workers: 24

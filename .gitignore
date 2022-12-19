@@ -1,0 +1,22 @@
+.idea/
+env/
+out/
+data
+
+__pycache__/
+*.trk
+*.gz
+*.pt
+*.png
+*.comet.config
+*.npy
+
+# Unit test / coverage reports
+.coverage
+
+log
+*/.ipynb_checkpoints
+
+setenv.sh
+
+.vscode
