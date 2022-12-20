@@ -1,0 +1,16 @@
+name: label pull request on paths
+# See https://github.com/actions/labeler
+
+on:
+  pull_request:
+    types: [opened, edited]
+
+jobs:
+  triage:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/labeler@main
+      with:
+        repo-token: "${{ secrets.GITHUB_TOKEN }}"
+        # File with label/regex match dictionary
+        configuration-path: .github/labels.yml

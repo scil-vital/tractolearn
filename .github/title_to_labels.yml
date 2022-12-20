@@ -1,0 +1,6 @@
+"BUG: ": "type:bug"
+"COMP: ": "type:compiler"
+"DOC: ": "type:documentation"
+"ENH: ": "type:enhancement"
+"PERF: ": "type:performance"
+"STYLE: ": "type:style"

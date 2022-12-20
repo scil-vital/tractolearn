@@ -1,0 +1,72 @@
+# area labels
+area:analysis:
+  - tractolearn/analysis/*
+area:anatomy:
+  - tractolearn/anatomy/*
+area:clustering:
+  - tractolearn/clustering/*
+area:config:
+  - tractolearn/config/*
+area:connectivity:
+  - tractolearn/connectivity/*
+area:dataset:
+  - tractolearn/dataset/*
+area:explainability:
+  - tractolearn/explainability/*
+area:filtering:
+  - tractolearn/filtering/*
+area:generative:
+  - tractolearn/generative/*
+area:io:
+  - tractolearn/tractoio/*
+area:learning:
+  - tractolearn/learning/*
+area:math:
+  - tractolearn/tractomath/*
+area:model:
+  - tractolearn/models/*
+area:scripts:
+  - tractolearn/scripts/*
+area:tracking:
+  - tractolearn/tracking/*
+area:transformation:
+  - tractolearn/transformation/*
+area:utils:
+  - tractolearn/utils/*
+area:visualization:
+  - tractolearn/visualization/*
+# type labels for PR path labeler
+# type labels for issue body labeler
+type:documentation:
+  - doc/*
+  - documentation
+  - README
+type:packaging:
+  - setup.py
+  - setup_helpers.py
+type:infrastructure:
+  - .gitignore
+  - .github/*
+  - .pre-commit-config.yaml
+  - requirements/*
+  - tools/*
+  - infrastructure
+  - setup.cfg
+type:testing:
+  - tractolearn/**/tests/*
+  - test
+# type labels for issue body labeler
+type:bug:
+  - fix
+type:compiler:
+  - python
+type:enhancement:
+  - enhancement
+type:performance:
+  - performance
+type:style:
+  - style
+type:design:
+  - design
+  - Refactor
+  - refactor
