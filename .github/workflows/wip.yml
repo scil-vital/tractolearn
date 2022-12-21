@@ -1,13 +1,15 @@
 name: WIP
 
 on:
-  pull_request:
+  pull_request_target:
     types:  [edited, labeled, opened, reopened, synchronize, unlabeled]
 
 jobs:
   WIP:
     name: Manage pull requests
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     steps:
       - name: Prevent WIP PRs from being merged
         uses: wow-actions/wip@v1

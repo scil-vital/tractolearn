@@ -2,12 +2,14 @@ name: label pull request on paths
 # See https://github.com/actions/labeler
 
 on:
-  pull_request:
+  pull_request_target:
     types: [opened, edited]
 
 jobs:
   triage:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     steps:
     - uses: actions/labeler@main
       with:
