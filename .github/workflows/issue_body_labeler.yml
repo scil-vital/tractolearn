@@ -8,6 +8,8 @@ on:
 jobs:
   triage:
     runs-on: ubuntu-latest
+    permissions:
+      issues: write
     steps:
     - uses: github/issue-labeler@v2.3
       with:

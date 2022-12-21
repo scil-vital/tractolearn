@@ -1,12 +1,14 @@
 name: label pull request on title
 
 on:
-  pull_request:
+  pull_request_target:
     types: [opened, edited]
 
 jobs:
   triage:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     steps:
     - uses: actions/checkout@v3
     - uses: actions/setup-python@v4
