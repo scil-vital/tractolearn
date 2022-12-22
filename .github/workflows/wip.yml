@@ -12,6 +12,6 @@ jobs:
       pull-requests: write
     steps:
       - name: Prevent WIP PRs from being merged
-        uses: wow-actions/wip@v1
-        env:
+        uses: wow-actions/wip@v1.1.0
+        with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
