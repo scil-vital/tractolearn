@@ -2,6 +2,8 @@
 
 Tractography learning.
 
+- Documentation: https://tractolearn.readthedocs.io/en/latest/
+
 ## Patent
 
 J. H. Legarreta, M. Descoteaux, and P.-M. Jodoin. “PROCESSING OF TRACTOGRAPHY
