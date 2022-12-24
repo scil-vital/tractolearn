@@ -1,6 +1,6 @@
 # tractolearn
 
-[![Build Status](https://github.com/scil-vital/ractolearn/workflows/test,%20package/badge.svg)](https://github.com//scil-vital/tractolearn/actions?query=workflow%3A%22test%2C+package%22+branch%main)
+[![test, package](https://github.com/scil-vital/tractolearn/actions/workflows/test_package.yml/badge.svg?branch=main)](https://github.com/scil-vital/tractolearn/actions/workflows/test_package.yml?query=branch%3Amain)
 
 Tractography learning.
 
