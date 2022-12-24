@@ -5,7 +5,7 @@
 Tractography learning.
 
 - Documentation: https://tractolearn.readthedocs.io/en/latest/
-- [Contributing](./doc/CONTRIBUTING.rst)
+- [Contributing](.github/CONTRIBUTING.rst)
 
 ## Patent
 
