@@ -1,8 +1,7 @@
 name: label pull request on title
 
 on:
-  pull_request_target:
-    types: [opened, edited]
+- pull_request_target
 
 jobs:
   triage:
