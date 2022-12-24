@@ -40,7 +40,7 @@ area:visualization:
 type:documentation:
   - doc/**/*
   - documentation
-  - README
+  - README.*
 type:packaging:
   - setup.py
   - setup_helpers.py
