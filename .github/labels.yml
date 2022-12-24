@@ -1,44 +1,44 @@
 # area labels
 area:analysis:
-  - tractolearn/analysis/*
+  - tractolearn/analysis/**/*
 area:anatomy:
-  - tractolearn/anatomy/*
+  - tractolearn/anatomy/**/*
 area:clustering:
-  - tractolearn/clustering/*
+  - tractolearn/clustering/**/*
 area:config:
-  - tractolearn/config/*
+  - tractolearn/config/**/*
 area:connectivity:
-  - tractolearn/connectivity/*
+  - tractolearn/connectivity/**/*
 area:dataset:
-  - tractolearn/dataset/*
+  - tractolearn/dataset/**/*
 area:explainability:
-  - tractolearn/explainability/*
+  - tractolearn/explainability/**/*
 area:filtering:
-  - tractolearn/filtering/*
+  - tractolearn/filtering/**/*
 area:generative:
-  - tractolearn/generative/*
+  - tractolearn/generative/**/*
 area:io:
-  - tractolearn/tractoio/*
+  - tractolearn/tractoio/**/*
 area:learning:
-  - tractolearn/learning/*
+  - tractolearn/learning/**/*
 area:math:
-  - tractolearn/tractomath/*
+  - tractolearn/tractomath/**/*
 area:model:
-  - tractolearn/models/*
+  - tractolearn/models/**/*
 area:scripts:
-  - tractolearn/scripts/*
+  - tractolearn/scripts/**/*
 area:tracking:
-  - tractolearn/tracking/*
+  - tractolearn/tracking/**/*
 area:transformation:
-  - tractolearn/transformation/*
+  - tractolearn/transformation/**/*
 area:utils:
-  - tractolearn/utils/*
+  - tractolearn/utils/**/*
 area:visualization:
-  - tractolearn/visualization/*
+  - tractolearn/visualization/**/*
 # type labels for PR path labeler
 # type labels for issue body labeler
 type:documentation:
-  - doc/*
+  - doc/**/*
   - documentation
   - README
 type:packaging:
@@ -46,10 +46,10 @@ type:packaging:
   - setup_helpers.py
 type:infrastructure:
   - .gitignore
-  - .github/*
+  - .github/**/*
   - .pre-commit-config.yaml
-  - requirements/*
-  - tools/*
+  - requirements/**/*
+  - tools/**/*
   - infrastructure
   - setup.cfg
 type:testing:
