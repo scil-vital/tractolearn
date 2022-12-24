@@ -70,14 +70,14 @@ formatted interactive coverage report.
 Code style
 ----------
 
-Code contributions should be formatted according to the `tractolearn Coding Style Guideline <./doc/devel/coding_style_guideline.rst>`_.
+Code contributions should be formatted according to the `tractolearn Coding Style Guideline <../doc/devel/coding_style_guideline.rst>`_.
 Please, read the document to conform your code contributions to the tractolearn
-standard.
+standard.s
 
 Documentation
 -------------
 
-tractolearn uses `Sphinx`_ to generate documentation. The `tractolearn Coding Style Guideline <./doc/devel/coding_style_guideline.rst>`_
+tractolearn uses `Sphinx`_ to generate documentation. The `tractolearn Coding Style Guideline <../doc/devel/coding_style_guideline.rst>`_
 contains details about documenting the contributions.
 
 To build the documentation locally, you can build it running::
