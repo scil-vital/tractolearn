@@ -1,0 +1,92 @@
+name: test, package
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      # max-parallel: 6
+      matrix:
+        os: [ubuntu-latest]
+        python-version: [3.8]
+        requires: ['minimal', 'latest']
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Set min. dependencies
+      if: matrix.requires == 'minimal'
+      run: |
+        python -c "req = open('setup.cfg').read().replace(' >= ', ' == ') ; open('setup.cfg', 'w').write(req)"
+
+    # - name: Cache pip
+    #   uses: actions/cache@v2
+    #   id: cache
+    #   with:
+    #     path: ${{ env.pythonLocation }}
+    #     # Look to see if there is a cache hit for the corresponding requirements files
+    #     key: ${{ env.pythonLocation }}-${{ hashFiles('requirements/*') }}
+    #     restore-keys: |
+    #       ${{ env.pythonLocation }}-
+
+    - name: Install dependencies
+      # if: steps.cache.outputs.cache-hit != 'true'
+      run: |
+        python -m pip install --upgrade --user pip
+        pip install setuptools tox
+        pip install -e .[testing]
+        pip install -r requirements/requirements_dmri_git.txt
+        # Force upgrading numpy to avoid the `scilpy` requested 1.18.*
+        pip install --upgrade matplotlib==3.1.0
+        pip install --upgrade "numpy>1.18,<1.21"
+        # Force upgrading packages to avoid numpy-related built-in type deprecation warnings
+        pip install --upgrade dipy==1.4.1
+        pip install --upgrade fury==0.7.1
+        pip install --upgrade h5py==3.0.0
+        pip install --upgrade nibabel==3.2.1
+        pip install --upgrade scikit-learn==0.24.0
+        pip install --upgrade scipy==1.7.0
+        pip install --upgrade nilearn==0.7.0
+        python --version
+        pip --version
+        pip list
+
+    - name: Run tests
+      run: |
+        # tox --sitepackages
+        python -c 'import tractolearn'
+        coverage run --source tractolearn -m pytest tractolearn -o junit_family=xunit2 -v --doctest-modules --junitxml=junit/test-results-${{ runner.os }}-${{ matrix.python-version }}.xml
+
+    - name: Upload pytest test results
+      uses: actions/upload-artifact@master
+      with:
+        name: pytest-results-${{ runner.os }}-${{ matrix.python-version }}
+        path: junit/test-results-${{ runner.os }}-${{ matrix.python-version }}.xml
+      # Use always() to always run this step to publish test results when there are test failures
+      if: always()
+
+    - name: Statistics
+      if: success()
+      run: |
+         coverage report
+
+    - name: Package Setup
+    # - name: Run tests with tox
+      run: |
+        pip install build
+        # check-manifest
+        python -m build
+        # twine check dist/
+        # tox --sitepackages
+        # python -m tox
