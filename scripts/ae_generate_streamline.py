@@ -53,48 +53,67 @@ def _build_arg_parser():
     parser = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawTextHelpFormatter
     )
-    parser.add_argument("--in_bundles_MNI", help="Seed bundles [*.trk]", nargs="+")
     parser.add_argument(
-        "--in_bundles_native", help="Bundles in native space [*.trk]", nargs="+"
+        "--in_bundles_common_space",
+        help="Seed bundles [ *.trk ]. "
+        "Subject specific bundles obtained from a whole-brain tractogram bundling process. "
+        "These bundles are used to seed the AE latent space.",
+        nargs="+",
     )
 
     parser.add_argument(
-        "--model", help="AutoEncoder model file (AE) [.pt]", required=True
+        "--model", help="AutoEncoder model file (AE) [ *.pt ].", required=True
     )
 
     parser.add_argument(
-        "--reference_MNI",
-        help="Reference T1 file [ 3D image | nii/nii.gz ]",
+        "--reference_common_space",
+        help="Reference T1 file [ *.nii/.nii.gz ].",
         required=True,
     )
     parser.add_argument(
         "--reference_native",
-        help="Reference T1 file [ 3D image | nii/nii.gz ]",
+        help="Reference T1 file [ *.nii/.nii.gz ]. "
+        "Used to apply the transform Common Space -> Native space"
+        " for the peak filtering process (done in native space)",
         required=True,
     )
 
     parser.add_argument(
-        "--thresholds_file", help="Thresholds file [.json]", required=True
+        "--anatomy_file",
+        help="Anatomy file [ *.json ]. JSON file containing bundle names with corresponding class label.",
+        required=True,
     )
-
-    parser.add_argument("--anatomy_file", help="Anatomy file [.json]", required=True)
 
     parser.add_argument("--output", help="Output path", required=True)
 
     parser.add_argument(
         "--atlas_path",
-        help="Path containing all atlas bundles "
-        "that we use to filter the tractogram",
+        help="Path containing all atlas bundles [ *.trk ] used to seed the latent space. "
+        "Bundles must be in the same space as the argument --in_bundles_common_space.",
     )
 
     parser.add_argument(
-        "--wm_parc_MNI", help="White matter parcellation", required=True
+        "--wm_parc_common_space",
+        help="White matter parcellation in the common space used for WM filtering [ *.nii/.nii.gz ].",
+        required=True,
     )
-    parser.add_argument("--fa_MNI", help="FA image", required=True)
     parser.add_argument(
-        "--threshold_fa", help="Threshold FA", type=float, default=0.1, required=True
+        "--fa_common_space",
+        help="FA image in common space used for WM filtering [ *.nii/.nii.gz ].",
+        required=True,
     )
-    parser.add_argument("--peaks", help="FODF peaks", required=True)
+    parser.add_argument(
+        "--threshold_fa",
+        help="Threshold value for FA WM filtering",
+        type=float,
+        default=0.1,
+        required=True,
+    )
+    parser.add_argument(
+        "--peaks",
+        help="FODF peaks [ *.nii/.nii.gz ] used for peak filtering in native space",
+        required=True,
+    )
 
     parser.add_argument(
         "-d",
@@ -106,38 +125,67 @@ def _build_arg_parser():
     parser.add_argument(
         "-n",
         "--num_generated_streamlines",
-        help="Number of streamlines to generate config",
+        help="Config file [ *.json ] for the per-bundle desired number of generated streamlines.",
     )
 
-    parser.add_argument("--max_total_sampling", help="RS maximum sampling config")
+    parser.add_argument(
+        "--max_total_sampling",
+        help="Config file [ *.json ] for the per-bundle maximum number of generated streamlines."
+        "Use this argument to limit the time spent on RS for hard bundles.",
+    )
 
     parser.add_argument(
         "-r",
         "--ratio",
-        help="Number of streamlines to generate config",
+        help="Config file [ *.json ] for the per-bundle AE latent space desired seed ratio "
+        "( subject bundle|atlas bundle )",
     )
 
     parser.add_argument(
-        "-b", "--bandwidth", help="Bandwidth size", type=float, default=None
+        "-b",
+        "--bandwidth",
+        help="Bandwidth size used for the parzen window. Default is none, meaning that we used the "
+        "Silverman’s rule of thumb for the bandwidth estimation",
+        type=float,
+        default=None,
     )
-    parser.add_argument("-m", "--max_seeds", help="Maximum number of seeds", type=int)
     parser.add_argument(
-        "--minL", help="Minimum length of streamlines, in mm.", type=int, default=20
+        "-m",
+        "--max_seeds",
+        help="Maximum number of seeds to use per bundle for the AE latent space",
+        type=int,
     )
     parser.add_argument(
-        "--maxL", help="Maximum length of streamlines, in mm.", type=int, default=220
+        "--minL",
+        help="Minimum length of generated streamlines, in mm.",
+        type=int,
+        default=20,
+    )
+    parser.add_argument(
+        "--maxL",
+        help="Maximum length of generated streamlines, in mm.",
+        type=int,
+        default=220,
     )
     parser.add_argument("-p", "--plot_umaps", help="Plot umaps", action="store_true")
     parser.add_argument(
         "-a",
         "--generate_all_bundles",
         help="If flagged, will generate all bundles present in the atlas, "
-        "even if they were not present in the input bundle arguments",
+        "even if they were not present in the --in_bundles_common_space argument."
+        "Seed from missing bundle, will entirely be taken from the atlas even if the ratio is not ( 0 | 1 )",
         action="store_true",
     )
-    parser.add_argument("--use_rs", help="Use RS", action="store_true")
     parser.add_argument(
-        "--batch_sampling", help="RS batch size", type=int, default=5000
+        "--use_rs",
+        help="If not flagged, will use the default sklearn gaussian sampling process. ",
+        action="store_true",
+    )
+    parser.add_argument(
+        "--batch_sampling",
+        help="Sampling batch size. Use this argument if you want to prevent excessive memory usage. ",
+        type=int,
+        default=5000,
     )
     parser.add_argument(
         "--gmm_n_component",
@@ -148,7 +196,7 @@ def _build_arg_parser():
     )
     parser.add_argument(
         "--degree",
-        help="Accepted peak angle config",
+        help="Config file [ *.json ] for the per-bundle maximum degree angle for the peaks filtering",
     )
     parser.add_argument(
         "--in_transfo",
@@ -156,12 +204,12 @@ def _build_arg_parser():
     )
     parser.add_argument(
         "--in_deformation",
-        help="Path to the file containing a deformation field.",
+        help="Path to the file containing a deformation field [ *.nii/.nii.gz ].",
     )
 
     parser.add_argument(
         "--white_matter_config",
-        help="Path to the file white matter mask config.",
+        help="Config file [ *.json ] used to determine the type of WM filtering ( WM mask | thresholded FA ).",
     )
 
     add_overwrite_arg(parser)
@@ -214,8 +262,6 @@ def main():
 
     peaks = nib.load(args.peaks).get_fdata("unchanged")
 
-    thresholds = read_data_from_json_file(args.thresholds_file)
-
     atlas_files = None
 
     if args.atlas_path:
@@ -229,13 +275,13 @@ def main():
         ), "To generate all bundles, you need to provide a bundle atlas"
         bundles = atlas_files
     else:
-        bundles = args.in_bundles_MNI
+        bundles = args.in_bundles_common_space
 
     for f in tqdm(bundles):
         key = [k for k in streamline_classes if k in f][0]
 
         logger.info(f"Generating: {key}")
-        mni_bundle_file = [file for file in args.in_bundles_MNI if key in file]
+        mni_bundle_file = [file for file in args.in_bundles_common_space if key in file]
 
         if len(mni_bundle_file) > 1:
             raise ValueError(
@@ -255,7 +301,7 @@ def main():
         if mni_bundle_file is not None:
             X_f, _ = load_streamlines(
                 mni_bundle_file,
-                args.reference_MNI,
+                args.reference_common_space,
                 streamline_classes[key],
                 resample=True,
                 num_points=256,
@@ -270,7 +316,7 @@ def main():
             atlas_file = [file for file in atlas_files if key in file][0]
             X_a_not_flipped, _ = load_streamlines(
                 pjoin(args.atlas_path, atlas_file),
-                args.reference_MNI,
+                args.reference_common_space,
                 streamline_classes[key],
                 resample=True,
                 num_points=256,
@@ -278,7 +324,7 @@ def main():
 
             X_a_flipped, _ = load_streamlines(
                 pjoin(args.atlas_path, atlas_file),
-                args.reference_MNI,
+                args.reference_common_space,
                 streamline_classes[key],
                 resample=True,
                 num_points=256,
@@ -328,24 +374,24 @@ def main():
 
             save_streamlines(
                 X_f_generated,
-                args.reference_MNI,
+                args.reference_common_space,
                 pjoin(args.output, f"{key}_generated.trk"),
             )
 
             tractogram = StatefulTractogram(
-                X_f_generated, args.reference_MNI, space=Space.RASMM
+                X_f_generated, args.reference_common_space, space=Space.RASMM
             )
 
             logger.info(f"Hair Cut")
             with Timer():
                 X_f_generated_cut = cut_streamlines_outside_mask(
                     tractogram,
-                    nib.load(args.wm_parc_MNI).get_fdata("unchanged"),
+                    nib.load(args.wm_parc_common_space).get_fdata("unchanged"),
                     X_f_generated,
                 )
 
             tractogram = StatefulTractogram(
-                X_f_generated_cut, args.reference_MNI, space=Space.RASMM
+                X_f_generated_cut, args.reference_common_space, space=Space.RASMM
             )
 
             save_tractogram(
@@ -358,11 +404,12 @@ def main():
 
             if white_matter_config[key] == "wm":
                 logger.info(f"Using WM mask")
-                wm_image = nib.load(args.wm_parc_MNI).get_fdata("unchanged")
+                wm_image = nib.load(args.wm_parc_common_space).get_fdata("unchanged")
             elif white_matter_config[key] == "fa":
                 logger.info(f"Using thresholded fa mask")
                 wm_image = (
-                    nib.load(args.fa_MNI).get_fdata("unchanged") > args.threshold_fa
+                    nib.load(args.fa_common_space).get_fdata("unchanged")
+                    > args.threshold_fa
                 ).astype(float)
             else:
                 raise ValueError(
@@ -380,7 +427,7 @@ def main():
 
             save_streamlines(
                 X_f_generated_cut[ids],
-                args.reference_MNI,
+                args.reference_common_space,
                 pjoin(args.output, f"{key}_generated_filtered_mask.trk"),
             )
 
@@ -419,7 +466,7 @@ def main():
                 X_f_generated_cut[
                     local_orient_checker._compliant_indices["LOCAL_ORIENTATION_ANGLE"]
                 ],
-                args.reference_MNI,
+                args.reference_common_space,
                 pjoin(args.output, f"{key}_generated_filtered_fodf.trk"),
             )
 
@@ -433,7 +480,7 @@ def main():
                         ).intersection(set(ids))
                     )
                 ],
-                args.reference_MNI,
+                args.reference_common_space,
                 space=Space.RASMM,
             )
 
