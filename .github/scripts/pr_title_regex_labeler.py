@@ -30,8 +30,7 @@ with open(file) as f:
 # Add the word boundary to build the title regex
 word_boundary = r"\b"
 title_to_labels_regex = [
-    (word_boundary + key + word_boundary, val)
-    for key, val in title_to_labels.items()
+    (word_boundary + key + word_boundary, val) for key, val in title_to_labels.items()
 ]
 
 # Find the label matches

@@ -19,7 +19,11 @@ import torch
 from dipy.io.stateful_tractogram import StatefulTractogram, Space
 from dipy.io.streamline import save_tractogram
 from nibabel.streamlines import ArraySequence
-from scilpy.io.utils import add_verbose_arg, add_overwrite_arg, load_matrix_in_any_format
+from scilpy.io.utils import (
+    add_verbose_arg,
+    add_overwrite_arg,
+    load_matrix_in_any_format,
+)
 from scilpy.tracking.tools import filter_streamlines_by_length
 from scilpy.utils.streamlines import transform_warp_sft
 from tqdm import tqdm
@@ -50,18 +54,28 @@ def _build_arg_parser():
         description=__doc__, formatter_class=argparse.RawTextHelpFormatter
     )
     parser.add_argument("--in_bundles_MNI", help="Seed bundles [*.trk]", nargs="+")
-    parser.add_argument("--in_bundles_native", help="Bundles in native space [*.trk]", nargs="+")
-
-    parser.add_argument("--model", help="AutoEncoder model file (AE) [.pt]", required=True)
-
     parser.add_argument(
-        "--reference_MNI", help="Reference T1 file [ 3D image | nii/nii.gz ]", required=True
-    )
-    parser.add_argument(
-        "--reference_native", help="Reference T1 file [ 3D image | nii/nii.gz ]", required=True
+        "--in_bundles_native", help="Bundles in native space [*.trk]", nargs="+"
     )
 
-    parser.add_argument("--thresholds_file", help="Thresholds file [.json]", required=True)
+    parser.add_argument(
+        "--model", help="AutoEncoder model file (AE) [.pt]", required=True
+    )
+
+    parser.add_argument(
+        "--reference_MNI",
+        help="Reference T1 file [ 3D image | nii/nii.gz ]",
+        required=True,
+    )
+    parser.add_argument(
+        "--reference_native",
+        help="Reference T1 file [ 3D image | nii/nii.gz ]",
+        required=True,
+    )
+
+    parser.add_argument(
+        "--thresholds_file", help="Thresholds file [.json]", required=True
+    )
 
     parser.add_argument("--anatomy_file", help="Anatomy file [.json]", required=True)
 
@@ -69,10 +83,13 @@ def _build_arg_parser():
 
     parser.add_argument(
         "--atlas_path",
-        help="Path containing all atlas bundles " "that we use to filter the tractogram",
+        help="Path containing all atlas bundles "
+        "that we use to filter the tractogram",
     )
 
-    parser.add_argument("--wm_parc_MNI", help="White matter parcellation", required=True)
+    parser.add_argument(
+        "--wm_parc_MNI", help="White matter parcellation", required=True
+    )
     parser.add_argument("--fa_MNI", help="FA image", required=True)
     parser.add_argument(
         "--threshold_fa", help="Threshold FA", type=float, default=0.1, required=True
@@ -80,7 +97,10 @@ def _build_arg_parser():
     parser.add_argument("--peaks", help="FODF peaks", required=True)
 
     parser.add_argument(
-        "-d", "--device", help="Device to use for inference [ cpu | cuda ]", default="cpu"
+        "-d",
+        "--device",
+        help="Device to use for inference [ cpu | cuda ]",
+        default="cpu",
     )
 
     parser.add_argument(
@@ -97,7 +117,9 @@ def _build_arg_parser():
         help="Number of streamlines to generate config",
     )
 
-    parser.add_argument("-b", "--bandwidth", help="Bandwidth size", type=float, default=None)
+    parser.add_argument(
+        "-b", "--bandwidth", help="Bandwidth size", type=float, default=None
+    )
     parser.add_argument("-m", "--max_seeds", help="Maximum number of seeds", type=int)
     parser.add_argument(
         "--minL", help="Minimum length of streamlines, in mm.", type=int, default=20
@@ -114,7 +136,9 @@ def _build_arg_parser():
         action="store_true",
     )
     parser.add_argument("--use_rs", help="Use RS", action="store_true")
-    parser.add_argument("--batch_sampling", help="RS batch size", type=int, default=5000)
+    parser.add_argument(
+        "--batch_sampling", help="RS batch size", type=int, default=5000
+    )
     parser.add_argument(
         "--gmm_n_component",
         help="Number of components for the Gaussian Mixture Model used as a proposal "
@@ -177,7 +201,9 @@ def main():
     degree_config = read_data_from_json_file(args.degree)
     ratio_config = read_data_from_json_file(args.ratio)
     max_total_sampling_config = read_data_from_json_file(args.max_total_sampling)
-    num_generated_streamlines_config = read_data_from_json_file(args.num_generated_streamlines)
+    num_generated_streamlines_config = read_data_from_json_file(
+        args.num_generated_streamlines
+    )
     white_matter_config = read_data_from_json_file(args.white_matter_config)
 
     assert degree_config.keys() <= streamline_classes.keys()
@@ -277,7 +303,7 @@ def main():
         batch = args.batch_sampling
 
         random.seed(0)
-        seed = randint(0, 2 ** 32)
+        seed = randint(0, 2**32)
 
         while streamline_count < num_generated_streamlines_config[key]:
 
@@ -301,10 +327,14 @@ def main():
                 )
 
             save_streamlines(
-                X_f_generated, args.reference_MNI, pjoin(args.output, f"{key}_generated.trk")
+                X_f_generated,
+                args.reference_MNI,
+                pjoin(args.output, f"{key}_generated.trk"),
             )
 
-            tractogram = StatefulTractogram(X_f_generated, args.reference_MNI, space=Space.RASMM)
+            tractogram = StatefulTractogram(
+                X_f_generated, args.reference_MNI, space=Space.RASMM
+            )
 
             logger.info(f"Hair Cut")
             with Timer():
@@ -356,7 +386,9 @@ def main():
 
             logger.info(f"Registering in native.")
             transfo = load_matrix_in_any_format(args.in_transfo)
-            deformation_data = np.squeeze(nib.load(args.in_deformation).get_fdata(dtype=np.float32))
+            deformation_data = np.squeeze(
+                nib.load(args.in_deformation).get_fdata(dtype=np.float32)
+            )
             with Timer():
                 tractogram_native = transform_warp_sft(
                     tractogram,
@@ -395,7 +427,9 @@ def main():
                 X_f_generated_cut[
                     list(
                         set(
-                            local_orient_checker._compliant_indices["LOCAL_ORIENTATION_ANGLE"]
+                            local_orient_checker._compliant_indices[
+                                "LOCAL_ORIENTATION_ANGLE"
+                            ]
                         ).intersection(set(ids))
                     )
                 ],
@@ -419,7 +453,9 @@ def main():
                         random.sample(
                             list(sft.streamlines),
                             len(new_sft)
-                            - (streamline_count - num_generated_streamlines_config[key]),
+                            - (
+                                streamline_count - num_generated_streamlines_config[key]
+                            ),
                         )
                     ),
                     sft,

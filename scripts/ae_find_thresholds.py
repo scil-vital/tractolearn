@@ -20,7 +20,9 @@ from tqdm import tqdm
 
 from tractolearn.Logger import LoggerKeys, _set_up_logger
 from tractolearn.config.Experiment import ThresholdTestKeys
-from tractolearn.filtering.latent_space_distance_informer import LatentSpaceDistanceInformer
+from tractolearn.filtering.latent_space_distance_informer import (
+    LatentSpaceDistanceInformer,
+)
 from tractolearn.filtering.latent_space_featuring import (
     ROCSalientPoint,
     plot_latent_space,
@@ -120,7 +122,9 @@ def set_threshold(
     # Filter streamlines based on the latent space nearest neighbor distance
     logger.info("Filtering streamlines into plausibles/implausibles...")
 
-    distance_informer = LatentSpaceDistanceInformer(encoder, latent_atlas_all, num_neighbors=1)
+    distance_informer = LatentSpaceDistanceInformer(
+        encoder, latent_atlas_all, num_neighbors=1
+    )
 
     (
         distances,
@@ -225,7 +229,9 @@ def main():
     model.eval()
 
     implausible_file = pjoin(config[ThresholdTestKeys.INVALID_BUNDLE_FILE.value])
-    logger.info(f" +++ Loading Threshold Implausible Streamlines: {implausible_file} +++")
+    logger.info(
+        f" +++ Loading Threshold Implausible Streamlines: {implausible_file} +++"
+    )
 
     X_impl, y_impl = load_streamlines(
         implausible_file,
@@ -239,7 +245,9 @@ def main():
         if config[ThresholdTestKeys.MAX_IMPLAUSIBLE.value] < X_impl.shape[0]:
             logger.info(f" +++ Subsampling Threshold Implausible Streamlines  +++")
             indices = np.random.choice(
-                X_impl.shape[0], size=config[ThresholdTestKeys.MAX_IMPLAUSIBLE.value], replace=False
+                X_impl.shape[0],
+                size=config[ThresholdTestKeys.MAX_IMPLAUSIBLE.value],
+                replace=False,
             )
             X_impl = X_impl[indices]
             y_impl = y_impl[indices]
@@ -273,7 +281,9 @@ def main():
 
         a = [i for i in atlas_files if i == f][0]
 
-        threshold_bundle_file = pjoin(config[ThresholdTestKeys.VALID_BUNDLE_PATH.value], f)
+        threshold_bundle_file = pjoin(
+            config[ThresholdTestKeys.VALID_BUNDLE_PATH.value], f
+        )
 
         logger.info(f" +++ Loading Threshold Bundle File: {threshold_bundle_file} +++")
 
@@ -338,8 +348,12 @@ def main():
 
         f_dataset = OnTheFlyDataset(X_f, y_f)
         a_dataset = OnTheFlyDataset(X_atlas, y_atlas)
-        f_dataloader = torch.utils.data.DataLoader(f_dataset, batch_size=128, shuffle=True)
-        a_dataloader = torch.utils.data.DataLoader(a_dataset, batch_size=128, shuffle=True)
+        f_dataloader = torch.utils.data.DataLoader(
+            f_dataset, batch_size=128, shuffle=True
+        )
+        a_dataloader = torch.utils.data.DataLoader(
+            a_dataset, batch_size=128, shuffle=True
+        )
 
         latent_f, y_latent_f = encode_data(f_dataloader, device, model)
         latent_a, y_latent_a = encode_data(a_dataloader, device, model)
@@ -361,7 +375,9 @@ def main():
     logger.info(f" +++ Encoding Threshold Implausible Streamlines +++")
 
     impl_dataset = OnTheFlyDataset(X_impl, y_impl)
-    impl_dataloader = torch.utils.data.DataLoader(impl_dataset, batch_size=128, shuffle=True)
+    impl_dataloader = torch.utils.data.DataLoader(
+        impl_dataset, batch_size=128, shuffle=True
+    )
     latent_impl, y_latent_impl = encode_data(impl_dataloader, device, model)
 
     logger.info(f" +++ Stacking implausible streamlines +++")
@@ -372,7 +388,9 @@ def main():
     latent_thres_dict["implausible"] = (latent_impl, y_latent_impl)
     streamlines_dict["implausible"] = (X_impl, y_impl)
 
-    fname_root = pjoin(experiment_dir, LoggerKeys.latent_plot_fname_label.value + "_trk")
+    fname_root = pjoin(
+        experiment_dir, LoggerKeys.latent_plot_fname_label.value + "_trk"
+    )
     fname_root_atlas = pjoin(
         experiment_dir, LoggerKeys.latent_plot_fname_label.value + "_trk_atlas"
     )

@@ -56,7 +56,9 @@ def main():
 
     experiment = ExperimentFormatter(args.config_file)
 
-    logger_fname = pjoin(experiment.experiment_dir, LoggerKeys.logger_file_basename.name)
+    logger_fname = pjoin(
+        experiment.experiment_dir, LoggerKeys.logger_file_basename.name
+    )
     _set_up_logger(logger_fname)
 
     logger.info("Starting experiment {}...".format(experiment.experiment_dir))
@@ -87,7 +89,12 @@ def main():
 
     logger.info("Finished loading tractograms.")
 
-    train_loader, valid_loader, test_loader, viz_loader = data_manager.setup_data_loader()
+    (
+        train_loader,
+        valid_loader,
+        test_loader,
+        viz_loader,
+    ) = data_manager.setup_data_loader()
 
     data_loaders = (train_loader, valid_loader, test_loader)
 
@@ -116,7 +123,10 @@ def main():
 
         # Project the valid set
         val_latent_vecs, val_classes = encode_data(
-            viz_loader, device, trainer.model, limit_batch=experiment_dict["viz_num_batches"]
+            viz_loader,
+            device,
+            trainer.model,
+            limit_batch=experiment_dict["viz_num_batches"],
         )
         # Save the vectors (and the class of each streamline for easy plotting)
         torch.save(
@@ -132,7 +142,9 @@ def main():
             experiment_dict["rbx_classes"],
         )
         # Log the latent space plot to Comet
-        experiment_recorder.log_image(latent_plot_filename, name="latent_umap", step=epoch)
+        experiment_recorder.log_image(
+            latent_plot_filename, name="latent_umap", step=epoch
+        )
 
     logger.info("Finished training.")
     torch.cuda.empty_cache()
