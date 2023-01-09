@@ -50,20 +50,20 @@ def batch_filtering(
     thresholds,
 ):
 
-    mni_img = load_ref_anat_image(args.mni_reference)
+    mni_img = load_ref_anat_image(args.common_space_tractogram)
 
     logger.info("Loading tractogram ...")
 
-    mni_tractogram = load_tractogram(
-        args.mni_tractogram,
+    common_space_tractogram = load_tractogram(
+        args.common_space_tractogram,
         mni_img.header,
         to_space=Space.RASMM,
         trk_header_check=False,
         bbox_valid_check=False,
     )
 
-    tractogram = mni_tractogram
-    reference = args.mni_reference
+    tractogram = common_space_tractogram
+    reference = args.common_space_tractogram
 
     if args.original_tractogram:
         original_img = load_ref_anat_image(args.original_reference)
@@ -82,28 +82,29 @@ def batch_filtering(
                 "experiment.".format(args.original_tractogram)
             )
 
-        assert len(mni_tractogram) == len(original_tractogram)
+        assert len(common_space_tractogram) == len(original_tractogram)
 
         tractogram = original_tractogram
         reference = args.original_reference
 
-    if len(mni_tractogram) == 0:
+    if len(common_space_tractogram) == 0:
         raise RuntimeError(
             "MNI Tractogram in filename {} contains no "
             "streamlines. Please remove the file from the "
-            "experiment.".format(args.mni_tractogram)
+            "experiment.".format(args.common_space_tractogram)
         )
 
-    batch_num = ceil(len(mni_tractogram) / batch_size)
+    batch_num = ceil(len(common_space_tractogram) / batch_size)
 
     tractogram.data_per_streamline["ids"] = list(range(len(tractogram)))
 
     for i in tqdm(range(batch_num)):
         with Timer():
-            if len(mni_tractogram[i * batch_size : (i + 1) * batch_size]) == 0:
+            if len(common_space_tractogram[i * batch_size : (i + 1) * batch_size]) == 0:
                 continue
             streamlines = resample_streamlines_num_points(
-                mni_tractogram[i * batch_size : (i + 1) * batch_size], num_points
+                common_space_tractogram[i * batch_size : (i + 1) * batch_size],
+                num_points,
             ).streamlines
 
             ids = tractogram.data_per_streamline["ids"][
@@ -155,20 +156,20 @@ def whole_filtering(
     thresholds,
 ):
 
-    mni_img = load_ref_anat_image(args.mni_reference)
+    mni_img = load_ref_anat_image(args.common_space_tractogram)
 
     logger.info("Loading tractogram ...")
 
-    mni_tractogram = load_tractogram(
-        args.mni_tractogram,
+    common_space_tractogram = load_tractogram(
+        args.common_space_tractogram,
         mni_img.header,
         to_space=Space.RASMM,
         trk_header_check=False,
         bbox_valid_check=False,
     )
 
-    tractogram = mni_tractogram
-    reference = args.mni_reference
+    tractogram = common_space_tractogram
+    reference = args.common_space_tractogram
 
     if args.original_tractogram:
         original_img = load_ref_anat_image(args.original_reference)
@@ -187,20 +188,20 @@ def whole_filtering(
                 "experiment.".format(args.original_tractogram)
             )
 
-        assert len(mni_tractogram) == len(original_tractogram)
+        assert len(common_space_tractogram) == len(original_tractogram)
 
         tractogram = original_tractogram
         reference = args.original_reference
 
-    if len(mni_tractogram) == 0:
+    if len(common_space_tractogram) == 0:
         raise RuntimeError(
             "MNI Tractogram in filename {} contains no "
             "streamlines. Please remove the file from the "
-            "experiment.".format(args.mni_tractogram)
+            "experiment.".format(args.common_space_tractogram)
         )
 
     streamlines = resample_streamlines_num_points(
-        mni_tractogram, num_points
+        common_space_tractogram, num_points
     ).streamlines
 
     # Dump streamline data to array
@@ -244,34 +245,35 @@ def _build_arg_parser():
         description=__doc__, formatter_class=argparse.RawTextHelpFormatter
     )
     parser.add_argument(
-        "mni_tractogram",
-        help="Tractogram to filter [*.trk]",
+        "common_space_tractogram",
+        help="Tractogram to bundle [ *.trk ]. Must be in the same as the one used to train the AE",
     )
 
     parser.add_argument(
         "atlas_path",
-        help="Path containing all atlas bundles "
-        "that we use to filter the tractogram",
+        help="Path containing all atlas bundles [ *.trk ] used to bundle the tractogram. "
+        "Bundles must be in the same space as the common_space_tractogram.",
     )
 
     parser.add_argument(
         "model",
-        help="AutoEncoder model file (AE) [.pt]",
+        help="AutoEncoder model file (AE) [ *.pt ]",
     )
 
     parser.add_argument(
-        "mni_reference",
-        help="Reference T1 file [ 3D image | nii/nii.gz ]",
+        "common_space_reference",
+        help="Reference T1 file [ *.nii/.nii.gz ]",
     )
 
     parser.add_argument(
         "thresholds_file",
-        help="Thresholds file [.json]",
+        help="Config file [ *.json ] containing the per-bundle latent space distance thresholds. ",
     )
 
     parser.add_argument(
         "anatomy_file",
-        help="Anatomy file [.json]",
+        help="Anatomy file [ *.json ]. JSON file containing bundle names with corresponding class label.",
+        required=True,
     )
 
     parser.add_argument(
@@ -282,13 +284,13 @@ def _build_arg_parser():
     parser.add_argument(
         "--original_tractogram",
         help="Tractogram in the original space."
-        "If a file is passed, output bundles will in "
-        "its space. Else, it will be in mni_tractogram space [*.trk]",
+        "If a file is passed, output bundles will be in "
+        "its space. Else, it will be in common_space_tractogram space [ *.trk ]",
     )
 
     parser.add_argument(
         "--original_reference",
-        help="Reference T1 file in the " "original space [ 3D image | nii/nii.gz ]",
+        help="Reference T1 file in the native space [ *.nii/.nii.gz ]",
     )
 
     parser.add_argument(
@@ -379,7 +381,7 @@ def main():
 
         X_a_not_flipped, y_a_not_flipped = load_streamlines(
             pjoin(args.atlas_path, f),
-            args.mni_reference,
+            args.common_space_tractogram,
             streamline_classes[key],
             resample=True,
             num_points=256,
@@ -387,7 +389,7 @@ def main():
 
         X_a_flipped, y_a_flipped = load_streamlines(
             pjoin(args.atlas_path, f),
-            args.mni_reference,
+            args.common_space_tractogram,
             streamline_classes[key],
             resample=True,
             num_points=256,
