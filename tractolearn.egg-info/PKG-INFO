@@ -7,9 +7,9 @@ Author: jhlegarreta
 Author-email: jon.haitz.legarreta@gmail.com
 Maintainer: jhlegarreta
 License: UNKNOWN
-Project-URL: Bug tracker, ('https://github.com/jhlegarreta/tractolearn/issues',)
+Project-URL: Bug tracker, ('https://github.com/scil-vital/tractolearn/tractolearn/issues',)
 Project-URL: Documentation, ('https://tractolearn.readthedocs.io/en/latest/',)
-Project-URL: Source code, ('https://github.com/jhlegarreta/tractolearn',)
+Project-URL: Source code, ('https://github.com/scil-vital/tractolearn/tractolearn',)
 Description: # tractolearn
         
         Tractography learning.
@@ -74,7 +74,7 @@ Description: # tractolearn
         
 Keywords: DL dMRI ML neuroimaging tractography
 Platform: UNKNOWN
-Classifier: Development Status :: 3 - Alpha
+Classifier: Development Status :: 4 - Beta
 Classifier: Intended Audience :: Science/Research
 Classifier: Programming Language :: Python :: 3
 Classifier: Topic :: Scientific/Engineering

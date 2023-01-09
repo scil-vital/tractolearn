@@ -50,7 +50,7 @@ def batch_filtering(
     thresholds,
 ):
 
-    mni_img = load_ref_anat_image(args.common_space_tractogram)
+    mni_img = load_ref_anat_image(args.common_space_reference)
 
     logger.info("Loading tractogram ...")
 
@@ -63,7 +63,7 @@ def batch_filtering(
     )
 
     tractogram = common_space_tractogram
-    reference = args.common_space_tractogram
+    reference = args.common_space_reference
 
     if args.original_tractogram:
         original_img = load_ref_anat_image(args.original_reference)
@@ -156,7 +156,7 @@ def whole_filtering(
     thresholds,
 ):
 
-    mni_img = load_ref_anat_image(args.common_space_tractogram)
+    mni_img = load_ref_anat_image(args.common_space_reference)
 
     logger.info("Loading tractogram ...")
 
@@ -169,7 +169,7 @@ def whole_filtering(
     )
 
     tractogram = common_space_tractogram
-    reference = args.common_space_tractogram
+    reference = args.common_space_reference
 
     if args.original_tractogram:
         original_img = load_ref_anat_image(args.original_reference)
@@ -273,7 +273,6 @@ def _build_arg_parser():
     parser.add_argument(
         "anatomy_file",
         help="Anatomy file [ *.json ]. JSON file containing bundle names with corresponding class label.",
-        required=True,
     )
 
     parser.add_argument(
@@ -326,6 +325,8 @@ def _build_arg_parser():
 def main():
     args = _build_arg_parser()
     device = torch.device(args.device)
+
+    print(args)
 
     if exists(args.output):
         if not args.overwrite:
@@ -381,7 +382,7 @@ def main():
 
         X_a_not_flipped, y_a_not_flipped = load_streamlines(
             pjoin(args.atlas_path, f),
-            args.common_space_tractogram,
+            args.common_space_reference,
             streamline_classes[key],
             resample=True,
             num_points=256,
@@ -389,7 +390,7 @@ def main():
 
         X_a_flipped, y_a_flipped = load_streamlines(
             pjoin(args.atlas_path, f),
-            args.common_space_tractogram,
+            args.common_space_reference,
             streamline_classes[key],
             resample=True,
             num_points=256,
