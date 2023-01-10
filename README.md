@@ -46,9 +46,9 @@ In order to execute experiments reporting to [Comet](https://www.comet.ml/site/)
 
 ## Training models
 
-To train deep learning models, you need to launch the script [ae_train.py](scripts/ae_train.py). This script takes a config file with all training parameters such as epochs, datasets path, etc. The most up-to-date config file is [config.yaml](configs/config.yaml). You can launch the training pipeline with the following command:
+To train deep learning models, you need to launch the script [ae_train.py](scripts/ae_train.py). This script takes a config file with all training parameters such as epochs, datasets path, etc. The most up-to-date config file is [config.yaml](configs/train_config.yaml). You can launch the training pipeline with the following command:
 ```sh
-   ae_train.py config.yaml -vv
+   ae_train.py train_config.yaml -vv
 ```
 
 ## Contributing

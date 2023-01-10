@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Script for the inference and training of FINTA
+Script for the inference and training of FINTA-multibundle
 """
 import argparse
 import logging

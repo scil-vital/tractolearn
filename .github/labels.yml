@@ -47,7 +47,7 @@ type:packaging:
 type:infrastructure:
   - .gitignore
   - .github/*
-  - .pre-commit-config.yaml
+  - .pre-commit-train_config.yaml
   - requirements/*
   - tools/*
   - infrastructure

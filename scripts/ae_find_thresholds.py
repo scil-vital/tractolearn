@@ -137,7 +137,7 @@ def set_threshold(
         if k == "implausible":
             continue
 
-        logger.info(f"Finding threshols for: {k}")
+        logger.info(f"Finding thresholds for: {k}")
 
         os.makedirs(pjoin(experiment_dir, k))
 

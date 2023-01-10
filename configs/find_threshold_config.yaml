@@ -1,0 +1,21 @@
+model_type: "IncrFeatStridedConvFCUpsampReflectPadAE"
+model: "/home/fdumais/Desktop/Data/finta_rbx_atlas/models/best_model_contrastive_tractoinferno_hcp.pt"
+latent_dims: 32
+
+valid_bundle_path: "/media/fdumais/second_hdd/data_processed/article_paper_metrics/new_bundle_setup/ideal/final_bundles"
+invalid_bundle_file: "/media/fdumais/second_hdd/data_processed/article_paper_metrics/new_bundle_setup/ideal/mni_local_pft_500k_implausible.trk"
+atlas_path: "/media/fdumais/second_hdd/data_processed/article_paper_metrics/new_bundle_setup/ideal/atlas"
+reference: "/home/fdumais/Desktop/Data/finta_rbx_atlas/mni_masked.nii.gz"
+output: "/media/fdumais/second_hdd/data_processed/article_paper_metrics/new_bundle_setup/ideal/experiments"
+max_implausible:
+max_plausible:
+viz: False
+no_threshold:
+thresholds_file:
+valid_bundle_path_test:
+invalid_bundle_file_test:
+
+streamline_classes: "/media/fdumais/second_hdd/data_processed/article_paper_metrics/new_bundle_setup/ideal/atlas_config.json"
+streamline_length: 256
+
+device: "cuda"
