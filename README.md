@@ -1,6 +1,11 @@
 # tractolearn
 
+[![test, package](https://github.com/scil-vital/tractolearn/actions/workflows/test_package.yml/badge.svg?branch=main)](https://github.com/scil-vital/tractolearn/actions/workflows/test_package.yml?query=branch%3Amain)
+
 Tractography learning.
+
+- Documentation: https://tractolearn.readthedocs.io/en/latest/
+- [Contributing](.github/CONTRIBUTING.rst)
 
 ## Patent
 
