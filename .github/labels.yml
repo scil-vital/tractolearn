@@ -7,6 +7,7 @@ area:clustering:
   - tractolearn/clustering/**/*
 area:config:
   - tractolearn/config/**/*
+  - .pre-commit-config.yaml
 area:connectivity:
   - tractolearn/connectivity/**/*
 area:dataset:
@@ -47,7 +48,6 @@ type:packaging:
 type:infrastructure:
   - .gitignore
   - .github/**/*
-  - .pre-commit-config.yaml
   - requirements/**/*
   - tools/**/*
   - infrastructure
