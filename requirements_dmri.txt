@@ -1,3 +1,0 @@
-#git+https://github.com/jhlegarreta/tractodata@main
-#git+ssh://git@github.com/fdumais/ismrm_2015_tractography_challenge_scoring.git
-git+ssh://git@github.com/fdumais/scilpy.git@master

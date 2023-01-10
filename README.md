@@ -27,7 +27,7 @@ They can be installed by executing:
 
 ```sh
    pip install -r requirements.txt
-   pip install -r requirements_dmri.txt
+   pip install -r requirements_dmri_git.txt
 ```
 
 Torch not included. Tested with an NVIDIA RTX 3090 with:
