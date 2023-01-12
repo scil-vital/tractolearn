@@ -1,0 +1,11 @@
+README.md
+setup.cfg
+setup.py
+scripts/ae_bundle_streamlines.py
+scripts/ae_find_thresholds.py
+scripts/ae_generate_streamlines.py
+scripts/ae_train.py
+tractolearn.egg-info/PKG-INFO
+tractolearn.egg-info/SOURCES.txt
+tractolearn.egg-info/dependency_links.txt
+tractolearn.egg-info/top_level.txt
