@@ -7,6 +7,45 @@ Tractography learning.
 - Documentation: https://tractolearn.readthedocs.io/en/latest/
 - [Contributing](.github/CONTRIBUTING.rst)
 
+
+## Installation
+
+To use tractolearn, it is recommended to create a virtual environment using
+python 3.8 that will host the necessary dependencies. Torch tested with an
+NVIDIA RTX 3090 with:
+
+```sh
+   virtualenv tractolearn_env --python=python3.8
+   source tractolearn_env/bin/activate
+```
+
+`tractolearn` can be installed from its sources by executing, at its root:
+
+```sh
+   pip install -e .
+```
+
+In order to execute experiments reporting
+to [Comet](https://www.comet.ml/site/), an `api_key` needs to be set as an
+environment variable named `COMETML`. You can write this command in
+you `.bashrc`
+
+```sh
+   export COMETML="api_key"
+```
+
+## Training models
+
+To train deep learning models, you need to launch the
+script [ae_train.py](scripts/ae_train.py). This script takes a config file with
+all training parameters such as epochs, datasets path, etc. The most up-to-date
+config file is [config.yaml](configs/train_config.yaml). You can launch the
+training pipeline with the following command:
+
+```sh
+   ae_train.py train_config.yaml -vv
+```
+
 ## How to cite
 
 If you use this toolkit in a scientific publication or if you want to cite
