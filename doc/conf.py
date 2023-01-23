@@ -10,29 +10,29 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
+import os
 # import sys
+import tomli
+from importlib.metadata import version
 
 from datetime import datetime
 # sys.path.insert(0, os.path.abspath('.'))
 
-# -- General configuration -----------------------------------------------------
-
 # Load the release info into a dict by explicit execution
-info = {}
-with open(os.path.join("..", "setup.cfg")) as f:
-    exec(f.read(), info)
-
+with open(os.path.join("..", "pyproject.toml"), "rb") as f:
+    info = tomli.load(f)
 
 # -- Project information -----------------------------------------------------
 
-project = "tractolearn"
-copyright = f"2022-{datetime.now().year}, {info["__author__"]}s <{info["__email__"]}s>"
-author = f"{info["__author__"]}s"
+project = info["project"]["name"]
+_author = info["project"]["authors"][0]["name"]
+_email = info["project"]["authors"][1]["email"]
+copyright = f"2022-{datetime.now().year}, {_author}s <{_email}s>"
+author = f"{_author}s"
 
-version = info["__version__"]
+_version = version(project)
 # The full version, including alpha/beta/rc tags
-release = version
+release = _version
 
 
 # -- General configuration ---------------------------------------------------

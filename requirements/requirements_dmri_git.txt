@@ -1,1 +1,0 @@
-git+https://github.com/scilus/scilpy.git@1.2.2

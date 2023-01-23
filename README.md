@@ -23,6 +23,12 @@ NVIDIA RTX 3090 with:
 
 ```sh
    pip install -e .
+   pip install --upgrade numpy==1.23
+```
+
+Torch tested with an NVIDIA RTX 3090
+```sh
+   pip install torch==1.8.1+cu111 -f https://download.pytorch.org/whl/cu111/torch_stable.html
 ```
 
 In order to execute experiments reporting
