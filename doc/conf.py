@@ -11,9 +11,8 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
-# import sys
 import tomli
-from importlib.metadata import version
+import pkg_resources
 
 from datetime import datetime
 # sys.path.insert(0, os.path.abspath('.'))
@@ -30,7 +29,7 @@ _email = info["project"]["authors"][1]["email"]
 copyright = f"2022-{datetime.now().year}, {_author}s <{_email}s>"
 author = f"{_author}s"
 
-_version = version(project)
+_version = pkg_resources.require(project)[0].version
 # The full version, including alpha/beta/rc tags
 release = _version
 
