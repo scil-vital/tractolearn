@@ -59,6 +59,7 @@ test = [
     "pytest-cov",
     "pytest-pep8",
     "pytest-xdist",
+    "pytest_console_scripts",
 ]
 dev = [
     "black == 22.12",
@@ -73,6 +74,7 @@ ae_bundle_streamlines = "scripts:ae_bundle_streamlines.main"
 ae_find_thresholds = "scripts:ae_find_thresholds.main"
 ae_generate_streamlines = "scripts:ae_generate_streamlines.main"
 ae_train = "scripts:ae_train.main"
+fetch_data = "scripts:fetch_data.main"
 
 [options.extras_require]
 all = [
