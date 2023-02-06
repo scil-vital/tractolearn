@@ -71,7 +71,7 @@ jobs:
       run: |
         # tox --sitepackages
         python -c 'import tractolearn'
-        coverage run --source tractolearn -m pytest tractolearn -o junit_family=xunit2 -v --doctest-modules --junitxml=junit/test-results-${{ runner.os }}-${{ matrix.python-version }}.xml
+        coverage run --source tractolearn -m pytest tractolearn -o junit_family=xunit2 -v --doctest-modules --durations=10 --junitxml=junit/test-results-${{ runner.os }}-${{ matrix.python-version }}.xml
 
     - name: Upload pytest test results
       uses: actions/upload-artifact@master
