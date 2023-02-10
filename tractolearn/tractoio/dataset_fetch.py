@@ -399,7 +399,7 @@ fetch_generative_streamline_req_count_config = (
     TRACTOLEARN_DATASETS_URL + "/7562790/files/",
     ["number_rejection_sampling.json"],
     ["number_rejection_sampling.json"],
-    ["46acbb64aa3b2ba846c727cb8554566d "],
+    ["46acbb64aa3b2ba846c727cb8554566d"],
     "Requested number of generative bundle-wise streamline count",
     "783MB",
     "",
@@ -510,7 +510,7 @@ def retrieve_dataset(name, path):
         files, folder = _make_fetcher(path, *params)()
         return pjoin(folder, list(files.keys())[0])
     elif name == Dataset.GENERATIVE_STRML_RQ_COUNT_CONFIG.name:
-        params = fetch_generative_streamline_max_count_config
+        params = fetch_generative_streamline_req_count_config
         files, folder = _make_fetcher(path, *params)()
         return pjoin(folder, list(files.keys())[0])
     elif name == Dataset.GENERATIVE_WM_TISSUE_CRITERION_CONFIG.name:
