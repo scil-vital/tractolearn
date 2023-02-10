@@ -68,6 +68,11 @@ dev = [
     "isort == 5.8.0",
     "pre-commit >= 2.9.0",
 ]
+doc = [
+ "sphinx",
+ "sphinx-rtd-theme",
+ "tomli",
+]
 
 [project.scripts]
 ae_bundle_streamlines = "scripts:ae_bundle_streamlines.main"
