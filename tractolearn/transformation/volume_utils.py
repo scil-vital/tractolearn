@@ -79,7 +79,9 @@ def interpolate_volume_at_coordinates(
         raise ValueError("Volume must be 3D or 4D!")
 
     if volume.ndim == 3:
-        return map_coordinates(volume, coords.T, order=order, mode=mode, cval=cval)
+        return map_coordinates(
+            volume, coords.T, order=order, mode=mode, cval=cval
+        )
 
     if volume.ndim == 4:
         last_dim = volume.shape[-1]

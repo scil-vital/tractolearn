@@ -14,16 +14,18 @@ import comet_ml
 import nibabel as nib
 import numpy as np
 import torch
-from scilpy.io.utils import add_verbose_arg, add_overwrite_arg
+from scilpy.io.utils import add_overwrite_arg, add_verbose_arg
 
-from tractolearn.logger import LoggerKeys, _set_up_logger
 from tractolearn.config.experiment import ExperimentFormatter
 from tractolearn.filtering.latent_space_featuring import plot_latent_space
 from tractolearn.learning.data_manager import DataManager
 from tractolearn.learning.trainer_manager import Trainer
-
+from tractolearn.logger import LoggerKeys, _set_up_logger
 from tractolearn.models.autoencoding_utils import encode_data
-from tractolearn.transformation.volume_utils import compute_isocenter, compute_volume
+from tractolearn.transformation.volume_utils import (
+    compute_isocenter,
+    compute_volume,
+)
 from tractolearn.visualization.plot_utils import plot_loss_history
 
 torch.set_flush_denormal(True)
@@ -72,7 +74,9 @@ def main():
     # Call Experiment module
 
     if args.verbose:
-        logging.basicConfig(level=logging.INFO if args.verbose == 1 else logging.DEBUG)
+        logging.basicConfig(
+            level=logging.INFO if args.verbose == 1 else logging.DEBUG
+        )
 
     experiment = ExperimentFormatter(
         args.config_file,
@@ -102,7 +106,9 @@ def main():
 
     # TODO: Find a better way to import API key (eventually remove comet.ml)
     logger.info(comet_ml.get_comet_version())
-    experiment_recorder = experiment.record_experiment(api_key=os.environ["COMETML"])
+    experiment_recorder = experiment.record_experiment(
+        api_key=os.environ["COMETML"]
+    )
 
     ref_anat_img = nib.load(experiment_dict["ref_anat_fname"])
     isocenter = compute_isocenter(ref_anat_img)
@@ -174,13 +180,19 @@ def main():
 
     logger.info("Finished training.")
     torch.cuda.empty_cache()
-    lowest_loss_epoch = trainer.load_checkpoint(trainer.best_checkpoint, device)
+    lowest_loss_epoch = trainer.load_checkpoint(
+        trainer.best_checkpoint, device
+    )
 
     trainer.model.eval()
     train_loss_data_fname, valid_loss_data_fname = trainer.save_loss_history()
 
-    loss_plot_fname = pjoin(trainer.run_dir, LoggerKeys.loss_plot_file_basename.value)
-    plot_loss_history(train_loss_data_fname, valid_loss_data_fname, loss_plot_fname)
+    loss_plot_fname = pjoin(
+        trainer.run_dir, LoggerKeys.loss_plot_file_basename.value
+    )
+    plot_loss_history(
+        train_loss_data_fname, valid_loss_data_fname, loss_plot_fname
+    )
 
     logger.info(
         "Loaded saved best model: loss {} at epoch: {}".format(

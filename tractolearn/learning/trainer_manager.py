@@ -16,8 +16,8 @@ from torch.utils.data import DataLoader
 from torchsummary import summary
 from tqdm import tqdm
 
-from tractolearn.logger import LoggerKeys
 from tractolearn.config.experiment import DatasetTypes, ExperimentKeys
+from tractolearn.logger import LoggerKeys
 from tractolearn.models.forward import make_forward
 from tractolearn.models.model_performance_history import LossHistory
 from tractolearn.models.model_pool import get_model
@@ -53,7 +53,9 @@ class Trainer:
         self._epochs = experiment_dict["epochs"]
         self._showing_results_epoch = self._epochs - 1
         self._log_interval = experiment_dict["log_interval"]
-        self.experiment_dict = experiment_dict  # TODO discuss if this is clean?
+        self.experiment_dict = (
+            experiment_dict  # TODO discuss if this is clean?
+        )
 
         self._input_size = input_size
         self._normalize = experiment_dict["normalize"]
@@ -79,7 +81,9 @@ class Trainer:
         self._valid_loss_recorder = LossHistory()
 
     def build_model(self):
-        self._model = get_model(self._model_name, self._latent_space_dims, self._device)
+        self._model = get_model(
+            self._model_name, self._latent_space_dims, self._device
+        )
 
         self._model_name = self._model.__class__.__name__
 
@@ -107,7 +111,9 @@ class Trainer:
                 max_lr=0.001,
                 total_steps=None,
                 epochs=self._epochs,
-                steps_per_epoch=self.experiment_dict["num_steps_per_train_epoch"],
+                steps_per_epoch=self.experiment_dict[
+                    "num_steps_per_train_epoch"
+                ],
                 pct_start=0.3,
                 anneal_strategy="cos",
                 cycle_momentum=True,
@@ -219,7 +225,9 @@ class Trainer:
         loss_dataset_avg = train_loss / (steps_per_epoch * len(batch))
         # self._lr_scheduler.step(train_loss)
         logger.info(
-            "====> Epoch: {} Average loss: {:.4f}".format(epoch, loss_dataset_avg)
+            "====> Epoch: {} Average loss: {:.4f}".format(
+                epoch, loss_dataset_avg
+            )
         )
         self.experiment.log_metric("loss", loss_dataset_avg, epoch=epoch)
         self._train_loss_recorder.update(loss_dataset_avg)
@@ -233,7 +241,9 @@ class Trainer:
             self.valid_loader, "valid"
         )
         with torch.no_grad():
-            for i, batch in enumerate(tqdm(batch_iterator, total=steps_per_epoch)):
+            for i, batch in enumerate(
+                tqdm(batch_iterator, total=steps_per_epoch)
+            ):
                 loss = self._forward_pass(batch)
                 valid_loss += loss.item()
 

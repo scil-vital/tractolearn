@@ -1,13 +1,13 @@
 import torch
 
 from tractolearn.config.experiment import (
-    LossFunctionTypes,
     ExperimentKeys,
     LearningTask,
+    LossFunctionTypes,
 )
 from tractolearn.utils.losses import (
-    loss_function_ae,
     loss_contrastive_lecun_classes,
+    loss_function_ae,
     loss_triplet_classes,
     loss_triplet_hierarchical_classes,
 )
@@ -67,7 +67,10 @@ def make_forward(model, device, experiment_dict):
         def forward(batch):
             return forward_ae(model, loss_fn, device, batch)
 
-    elif experiment_dict[ExperimentKeys.TASK] == LearningTask.contrastive_lecun_classes:
+    elif (
+        experiment_dict[ExperimentKeys.TASK]
+        == LearningTask.contrastive_lecun_classes
+    ):
 
         def loss_fn_configured(z):
             return loss_fn(
@@ -76,7 +79,9 @@ def make_forward(model, device, experiment_dict):
             )
 
         def forward(batch):
-            return forward_contrastive(model, loss_fn_configured, device, batch)
+            return forward_contrastive(
+                model, loss_fn_configured, device, batch
+            )
 
     elif experiment_dict[ExperimentKeys.TASK] in [
         LearningTask.ae_contrastive_lecun_classes,
@@ -104,11 +109,14 @@ def make_forward(model, device, experiment_dict):
                 )
             return (
                 loss_value_ae
-                + experiment_dict["contrastive_loss_weight"] * loss_value_contrastive
+                + experiment_dict["contrastive_loss_weight"]
+                * loss_value_contrastive
             )
 
         def forward(batch):
-            return forward_ae_contrastive(model, loss_fn_configured, device, batch)
+            return forward_ae_contrastive(
+                model, loss_fn_configured, device, batch
+            )
 
     else:
         raise NotImplementedError

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
+
 import logging
 import os
 import shutil
-from enum import Enum
 from os.path import join as pjoin
 from pathlib import Path
 
@@ -20,10 +20,18 @@ class ExperimentKeys:
     LOSS_FN = "loss"
     MODEL_NAME = "model_name"
     TRACTOGRAM_GT_DATA_PATH = "tractogram_gt_data_path"
-    TRACTOGRAM_DET_PLAUS_TRACK_DATA_PATH = "tractogram_det_plaus_track_data_path"
-    TRACTOGRAM_DET_IMPLAUS_TRACK_DATA_PATH = "tractogram_det_implaus_track_data_path"
-    TRACTOGRAM_PROB_PLAUS_TRACK_DATA_PATH = "tractogram_prob_plaus_track_data_path"
-    TRACTOGRAM_PROB_IMPLAUS_TRACK_DATA_PATH = "tractogram_prob_implaus_track_data_path"
+    TRACTOGRAM_DET_PLAUS_TRACK_DATA_PATH = (
+        "tractogram_det_plaus_track_data_path"
+    )
+    TRACTOGRAM_DET_IMPLAUS_TRACK_DATA_PATH = (
+        "tractogram_det_implaus_track_data_path"
+    )
+    TRACTOGRAM_PROB_PLAUS_TRACK_DATA_PATH = (
+        "tractogram_prob_plaus_track_data_path"
+    )
+    TRACTOGRAM_PROB_IMPLAUS_TRACK_DATA_PATH = (
+        "tractogram_prob_implaus_track_data_path"
+    )
     TRACTOGRAM_FILTERING_DISTANCE_TEST_PLAUS_TRACK_DATA_PATH = (
         "tractogram_filtering_distance_test_plaus_track_data_path"
     )
@@ -31,11 +39,17 @@ class ExperimentKeys:
         "tractogram_filtering_distance_test_implaus_track_data_path"
     )
     TRACTOGRAM_TRAIN_PLAUS_DATA_PATH = "tractogram_train_plausibles_data_path"
-    TRACTOGRAM_TRAIN_IMPLAUS_DATA_PATH = "tractogram_train_implausibles_data_path"
+    TRACTOGRAM_TRAIN_IMPLAUS_DATA_PATH = (
+        "tractogram_train_implausibles_data_path"
+    )
     TRACTOGRAM_VALID_PLAUS_DATA_PATH = "tractogram_valid_plausibles_data_path"
-    TRACTOGRAM_VALID_IMPLAUS_DATA_PATH = "tractogram_valid_implausibles_data_path"
+    TRACTOGRAM_VALID_IMPLAUS_DATA_PATH = (
+        "tractogram_valid_implausibles_data_path"
+    )
     TRACTOGRAM_TEST_PLAUS_DATA_PATH = "tractogram_test_plausibles_data_path"
-    TRACTOGRAM_TEST_IMPLAUS_DATA_PATH = "tractogram_test_implausibles_data_path"
+    TRACTOGRAM_TEST_IMPLAUS_DATA_PATH = (
+        "tractogram_test_implausibles_data_path"
+    )
     REF_ANAT_FNAME = "ref_anat_fname"
     DATASET_NAME = "dataset_name"
     NUM_POINTS = "num_points"
@@ -193,7 +207,9 @@ class ExperimentFormatter:
         )
         experiment_recoder.disabled_monkey_patching = True
 
-        experiment_recoder.log_parameter("experiment_dir", str(self.experiment_dir))
+        experiment_recoder.log_parameter(
+            "experiment_dir", str(self.experiment_dir)
+        )
         logger.info("Experiment id in comet: {}".format(experiment_recoder.id))
 
         experiment_recoder.log_parameters(self.config)

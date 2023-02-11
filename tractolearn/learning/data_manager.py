@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
 
 import torch
-from torch.utils.data import Dataset
 
 from tractolearn.config.experiment import DatasetTypes, ExperimentKeys
 from tractolearn.learning.dataset import (
     ContrastiveDataset,
+    HierarchicalDataset,
     StreamlineClassificationDataset,
     TripletDataset,
-    HierarchicalDataset,
 )
 
 
@@ -25,26 +24,48 @@ class DataManager:
             DatasetTypes.hierarchical: HierarchicalDataset,
         }[self.experiment_dict[ExperimentKeys.DATASET_TYPE]]
 
-        self.train_dataset, self.valid_dataset, self.test_dataset = self.setup_dataset()
+        (
+            self.train_dataset,
+            self.valid_dataset,
+            self.test_dataset,
+        ) = self.setup_dataset()
 
-        self.num_points = self.train_dataset.num_points  # Num points per streamline
+        self.num_points = (
+            self.train_dataset.num_points
+        )  # Num points per streamline
         self.point_dims = self.train_dataset.point_dims  # 3
 
     def setup_dataset(self):
 
         kwargs = {}
-        if self.dataset in [ContrastiveDataset, TripletDataset, HierarchicalDataset]:
-            kwargs.update({"num_pairs": self.experiment_dict["contrastive_num_pairs"]})
+        if self.dataset in [
+            ContrastiveDataset,
+            TripletDataset,
+            HierarchicalDataset,
+        ]:
+            kwargs.update(
+                {"num_pairs": self.experiment_dict["contrastive_num_pairs"]}
+            )
 
         # Note that the seed will be overwritten in the worker_init_fn, see `setup_data_loader`.
-        train_dataset = self.dataset(self.experiment_dict, "train", self.seed, **kwargs)
-        test_dataset = self.dataset(self.experiment_dict, "test", self.seed, **kwargs)
-        valid_dataset = self.dataset(self.experiment_dict, "thres", self.seed, **kwargs)
+        train_dataset = self.dataset(
+            self.experiment_dict, "train", self.seed, **kwargs
+        )
+        test_dataset = self.dataset(
+            self.experiment_dict, "test", self.seed, **kwargs
+        )
+        valid_dataset = self.dataset(
+            self.experiment_dict, "thres", self.seed, **kwargs
+        )
 
         return train_dataset, valid_dataset, test_dataset
 
     def setup_data_loader(self):
-        if self.dataset in [ContrastiveDataset, TripletDataset, HierarchicalDataset]:
+        if self.dataset in [
+            ContrastiveDataset,
+            TripletDataset,
+            HierarchicalDataset,
+        ]:
             batch_size = None  # The dataset will output whole batches directly
             viz_dataset = self.valid_dataset.dataset
         else:

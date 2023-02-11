@@ -39,7 +39,9 @@ class LatentSpaceDistanceInformer:
         streamlines = torch.split(streamlines, batch)
 
         for streamline in tqdm(streamlines):
-            projected_latent_space_sample = self._encoder.predict(streamline)[0]
+            projected_latent_space_sample = self._encoder.predict(streamline)[
+                0
+            ]
 
             (
                 sample_distances,

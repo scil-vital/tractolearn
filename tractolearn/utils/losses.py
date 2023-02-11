@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-from typing import Optional, Callable, List
+from typing import Callable, List, Optional
 
 import torch
 import torch.nn.functional as F
-from torch import nn, Tensor
+from torch import Tensor, nn
 from torch.nn import _reduction as _Reduction
 
 reconstruction_loss = nn.MSELoss(reduction="sum")
@@ -61,7 +61,9 @@ def loss_contrastive_lecun_classes(z, margin):
     loss_pos = (pos1 - pos2) ** 2.0
 
     # Compute loss for negative pairs
-    loss_neg = torch.maximum(margin - (neg1 - neg2).abs(), torch.tensor(0.0)) ** 2
+    loss_neg = (
+        torch.maximum(margin - (neg1 - neg2).abs(), torch.tensor(0.0)) ** 2
+    )
 
     return torch.sum(loss_pos + loss_neg)
 
@@ -154,7 +156,8 @@ def loss_triplet_hierarchical_classes(
 
     anchor = z[:sixth_batch_size]
     positives = [
-        z[sixth_batch_size * (i + 1) : sixth_batch_size * (i + 2)] for i in range(4)
+        z[sixth_batch_size * (i + 1) : sixth_batch_size * (i + 2)]
+        for i in range(4)
     ]
     negative = z[-sixth_batch_size:]
 
@@ -188,12 +191,16 @@ def triplet_margin_with_distance_loss_hierarchical(
         positive_dist = distance_function(anchor, l)
 
         if cumulative_loss is None:
-            cumulative_loss = torch.exp(1 / (torch.tensor(i) + 1)) * torch.clamp(
+            cumulative_loss = torch.exp(
+                1 / (torch.tensor(i) + 1)
+            ) * torch.clamp(
                 positive_dist - negative_dist + (len(positives) - i) * margin,
                 min=0.0,
             )
         else:
-            cumulative_loss += torch.exp(1 / (torch.tensor(i) + 1)) * torch.clamp(
+            cumulative_loss += torch.exp(
+                1 / (torch.tensor(i) + 1)
+            ) * torch.clamp(
                 positive_dist - negative_dist + (len(positives) - i) * margin,
                 min=0.0,
             )

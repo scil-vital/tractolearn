@@ -9,7 +9,7 @@ from nibabel.streamlines import ArraySequence
 from scilpy.segment.streamlines import streamlines_in_mask
 from scipy.ndimage import map_coordinates
 
-from tractolearn.tractomath.utils import unit_vector, compute_angle
+from tractolearn.tractomath.utils import compute_angle, unit_vector
 from tractolearn.transformation.peaks_utils import (
     get_peak_count,
     reshape_peaks_for_computing,
@@ -18,7 +18,9 @@ from tractolearn.transformation.streamline_transformation import (
     resample_streamlines,
     sft_voxel_transform,
 )
-from tractolearn.transformation.volume_utils import interpolate_volume_at_coordinates
+from tractolearn.transformation.volume_utils import (
+    interpolate_volume_at_coordinates,
+)
 
 torch.set_flush_denormal(True)
 logger = logging.getLogger("root")
@@ -41,7 +43,9 @@ class StreamlineFeatures(Enum):
     SURFACE_PROJECTED_ANGLE = "surface_projected_angle"
 
 
-def filter_grid_roi(sft, mask, filter_type, is_exclude, soft_percentage: float = None):
+def filter_grid_roi(
+    sft, mask, filter_type, is_exclude, soft_percentage: float = None
+):
     """
     Parameters
     ----------
@@ -61,7 +65,9 @@ def filter_grid_roi(sft, mask, filter_type, is_exclude, soft_percentage: float =
     """
     line_based_indices = []
     if filter_type in ["any", "all"]:
-        line_based_indices = streamlines_in_mask(sft, mask, all_in=filter_type == "all")
+        line_based_indices = streamlines_in_mask(
+            sft, mask, all_in=filter_type == "all"
+        )
     else:
         sft_voxel_transform(sft)
         streamline_vox = sft.streamlines
@@ -91,7 +97,9 @@ def filter_grid_roi(sft, mask, filter_type, is_exclude, soft_percentage: float =
             )
         # Only one endpoint need to be in the mask (OR)
         elif filter_type == "either_end":
-            line_based_indices = np.union1d(line_based_indices_1, line_based_indices_2)
+            line_based_indices = np.union1d(
+                line_based_indices_1, line_based_indices_2
+            )
 
         elif filter_type == "soft_all":
             line_based_indices = line_based_indices_3
@@ -239,7 +247,9 @@ def interpolate_peak_dirs_at_streamline_locations(streamlines, peak_dirs):
 
     # Peak orientation values (spatial dimensions) are set to the last
     # dimension (..., P, 3)
-    rsh_peak_dirs = reshape_peaks_for_computing(peak_dirs, peak_count, spatial_dims)
+    rsh_peak_dirs = reshape_peaks_for_computing(
+        peak_dirs, peak_count, spatial_dims
+    )
 
     interpolated_peak_dirs = []
 
@@ -360,7 +370,9 @@ def compute_streamline_to_peaks_angles(
             if (_angles == 90.0).any():
                 pass
                 # print('Streamline is out of bounds and so has peaks of 0.')
-            assert (v_arr[_angles == 90.0] == 0.0).all(), v_arr[_angles == 90.0]
+            assert (v_arr[_angles == 90.0] == 0.0).all(), v_arr[
+                _angles == 90.0
+            ]
 
             assert not np.isnan(_angles).any(), _angles
 
@@ -464,7 +476,9 @@ def compute_local_orientation_alignment2(sft, peak_dirs):
     streamlines = sft.get_streamlines_copy()
 
     # Compute streamline local orientation
-    streamline_local_orientations = compute_streamline_local_orientation(streamlines)
+    streamline_local_orientations = compute_streamline_local_orientation(
+        streamlines
+    )
 
     # Peaks need to be interpolated since for each streamline we have a single
     # streamline local orientation at each spatial location but we may have
@@ -544,7 +558,9 @@ def is_feature_plausible(feature_value, thresholds):
         else:
             # is_plausible = not bool(feature_value)
             is_plausible = feature_value
-    elif isinstance(feature_value, np.ndarray) or isinstance(feature_value, list):
+    elif isinstance(feature_value, np.ndarray) or isinstance(
+        feature_value, list
+    ):
         # Deal with global (streamline-wise) features vs. local (segment-wise
         # or endpoint-wise) features: if the first element in the features has
         # no length, assume all features are scalars (e.g. a global feature
@@ -554,7 +570,9 @@ def is_feature_plausible(feature_value, thresholds):
         if not hasattr(feature_value[0], "__len__"):
             if thresholds:
                 is_plausible = [
-                    thresholds.get("min", 0) <= val <= thresholds.get("max", np.inf)
+                    thresholds.get("min", 0)
+                    <= val
+                    <= thresholds.get("max", np.inf)
                     for val in feature_value
                 ]
             else:
@@ -577,9 +595,12 @@ def is_feature_plausible(feature_value, thresholds):
                 # values) the signs should be reversed and the default value
                 # should be set to 0.0 instead of infinity.
                 is_plausible = [
-                    np.quantile(val[val < thresholds.get("mask_value", np.inf)], 0.75)
+                    np.quantile(
+                        val[val < thresholds.get("mask_value", np.inf)], 0.75
+                    )
                     <= thresholds.get("3rd_quartile", np.inf)
-                    if len(val[val < thresholds.get("mask_value", np.inf)]) != 0
+                    if len(val[val < thresholds.get("mask_value", np.inf)])
+                    != 0
                     else False
                     for val in feature_value
                 ]
@@ -650,7 +671,9 @@ class StreamlineLocalOrientationChecker(TractographyChecker):
             features,
             thresholds,
         )
-        local_orient_compliant_ids = list(np.where(local_orient_compliant_mask)[0])
+        local_orient_compliant_ids = list(
+            np.where(local_orient_compliant_mask)[0]
+        )
 
         self._compliant_indices = dict(
             {

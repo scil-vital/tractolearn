@@ -45,23 +45,33 @@ class IncrFeatStridedConvFCUpsampReflectPadAE(nn.Module):
         self.decod_conv1 = pre_pad(
             nn.Conv1d(1024, 512, self.kernel_size, stride=1, padding=0)
         )
-        self.upsampl1 = nn.Upsample(scale_factor=2, mode="linear", align_corners=False)
+        self.upsampl1 = nn.Upsample(
+            scale_factor=2, mode="linear", align_corners=False
+        )
         self.decod_conv2 = pre_pad(
             nn.Conv1d(512, 256, self.kernel_size, stride=1, padding=0)
         )
-        self.upsampl2 = nn.Upsample(scale_factor=2, mode="linear", align_corners=False)
+        self.upsampl2 = nn.Upsample(
+            scale_factor=2, mode="linear", align_corners=False
+        )
         self.decod_conv3 = pre_pad(
             nn.Conv1d(256, 128, self.kernel_size, stride=1, padding=0)
         )
-        self.upsampl3 = nn.Upsample(scale_factor=2, mode="linear", align_corners=False)
+        self.upsampl3 = nn.Upsample(
+            scale_factor=2, mode="linear", align_corners=False
+        )
         self.decod_conv4 = pre_pad(
             nn.Conv1d(128, 64, self.kernel_size, stride=1, padding=0)
         )
-        self.upsampl4 = nn.Upsample(scale_factor=2, mode="linear", align_corners=False)
+        self.upsampl4 = nn.Upsample(
+            scale_factor=2, mode="linear", align_corners=False
+        )
         self.decod_conv5 = pre_pad(
             nn.Conv1d(64, 32, self.kernel_size, stride=1, padding=0)
         )
-        self.upsampl5 = nn.Upsample(scale_factor=2, mode="linear", align_corners=False)
+        self.upsampl5 = nn.Upsample(
+            scale_factor=2, mode="linear", align_corners=False
+        )
         self.decod_conv6 = pre_pad(
             nn.Conv1d(32, 3, self.kernel_size, stride=1, padding=0)
         )
@@ -85,7 +95,9 @@ class IncrFeatStridedConvFCUpsampReflectPadAE(nn.Module):
 
     def decode(self, z):
         fc = self.fc2(z)
-        fc_reshape = fc.view(-1, self.encoder_out_size[0], self.encoder_out_size[1])
+        fc_reshape = fc.view(
+            -1, self.encoder_out_size[0], self.encoder_out_size[1]
+        )
         h1 = F.relu(self.decod_conv1(fc_reshape))
         h2 = self.upsampl1(h1)
         h3 = F.relu(self.decod_conv2(h2))

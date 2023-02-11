@@ -20,7 +20,9 @@ def get_model(model_name, latent_space_dims, device):
     """
 
     if model_name == "IncrFeatStridedConvFCUpsampReflectPadAE":
-        model = IncrFeatStridedConvFCUpsampReflectPadAE(latent_space_dims).to(device)
+        model = IncrFeatStridedConvFCUpsampReflectPadAE(latent_space_dims).to(
+            device
+        )
     else:
         print("Model not implemented")
         model = None

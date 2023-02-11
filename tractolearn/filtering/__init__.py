@@ -19,9 +19,7 @@ class LatentSpaceKeys(Enum):
     plaus_streamlines_tractogram_latent_distances_cbar_file_basename = (
         "plausible_streamlines_tractogram_latent_space_distances_colorbar.png"
     )
-    implaus_streamlines_tractogram_latent_distances_cbar_file_basename = (
-        "implausible_streamlines_tractogram_latent_space_distances_colorbar.png"
-    )
+    implaus_streamlines_tractogram_latent_distances_cbar_file_basename = "implausible_streamlines_tractogram_latent_space_distances_colorbar.png"
 
     plausible_streamlines_latent_distances_file_basename = (
         "plausible_streamlines_latent_distances.pickle"
@@ -34,8 +32,12 @@ class LatentSpaceKeys(Enum):
 
     confusion_matrix_fname_root = "confusion_matrix"
 
-    test_data_reconst_plaus_tractogram_fname_root = "test_data_reconst_plausibles"
-    test_data_reconst_implaus_tractogram_fname_root = "test_data_reconst_implausibles"
+    test_data_reconst_plaus_tractogram_fname_root = (
+        "test_data_reconst_plausibles"
+    )
+    test_data_reconst_implaus_tractogram_fname_root = (
+        "test_data_reconst_implausibles"
+    )
 
     test_data_tp_tractogram_fname_root = "test_data_tp"
     test_data_fp_tractogram_fname_root = "test_data_fp"

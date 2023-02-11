@@ -21,20 +21,27 @@ key_separator = ","
 
 
 class Dataset(enum.Enum):
-    """Datasets for tractography learning.
-    """
+    """Datasets for tractography learning."""
 
     BUNDLE_LABEL_CONFIG = "bundle_label_config"
     CONTRASTIVE_AUTOENCODER_WEIGHTS = "contrastive_ae_weights"
     MNI2009CNONLINSYMM_ANAT = "mni2009cnonlinsymm_anat"
     GENERATIVE_LOA_CONE_CONFIG = "generative_loa_cone_config"
-    GENERATIVE_SEED_STRML_RATIO_CONFIG = "generative_seed_streamline_ratio_config"
-    GENERATIVE_STRML_MAX_COUNT_CONFIG = "generative_streamline_max_count_config"
+    GENERATIVE_SEED_STRML_RATIO_CONFIG = (
+        "generative_seed_streamline_ratio_config"
+    )
+    GENERATIVE_STRML_MAX_COUNT_CONFIG = (
+        "generative_streamline_max_count_config"
+    )
     GENERATIVE_STRML_RQ_COUNT_CONFIG = "generative_streamline_req_count_config"
-    GENERATIVE_WM_TISSUE_CRITERION_CONFIG = "generative_wm_tisue_criterion_config"
+    GENERATIVE_WM_TISSUE_CRITERION_CONFIG = (
+        "generative_wm_tisue_criterion_config"
+    )
     RECOBUNDLESX_ATLAS = "recobundlesx_atlas"
     RECOBUNDLESX_CONFIG = "recobundlesx_config"
-    TRACTOINFERNO_HCP_CONTRASTIVE_THR_CONFIG = "tractoinferno_hcp_contrastive_thr_config"
+    TRACTOINFERNO_HCP_CONTRASTIVE_THR_CONFIG = (
+        "tractoinferno_hcp_contrastive_thr_config"
+    )
     TRACTOINFERNO_HCP_REF_TRACTOGRAPHY = "tractoinferno_hcp_ref_tractography"
 
     # Methods for argparse compatibility
@@ -521,7 +528,13 @@ def retrieve_dataset(name, path):
         params = fetch_recobundlesx_atlas
         files, folder = _make_fetcher(path, *params)()
         fnames = files["atlas.zip"][2]
-        return sorted([pjoin(folder, f) for f in fnames if os.path.isfile(pjoin(folder, f))])
+        return sorted(
+            [
+                pjoin(folder, f)
+                for f in fnames
+                if os.path.isfile(pjoin(folder, f))
+            ]
+        )
     elif name == Dataset.RECOBUNDLESX_CONFIG.name:
         params = fetch_recobundlesx_config
         files, folder = _make_fetcher(path, *params)()

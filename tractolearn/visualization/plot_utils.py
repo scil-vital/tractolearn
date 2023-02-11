@@ -112,6 +112,8 @@ def upsample_coords(coord_list, num_interp_points=1000):
     # Degree of the  B-Spline. Setting to 1 for linear spline
     k = 1
     tck, u = interpolate.splprep(coord_list, k=k, s=s)
-    upsampled_coords = interpolate.splev(np.linspace(0, 1, num_interp_points), tck)
+    upsampled_coords = interpolate.splev(
+        np.linspace(0, 1, num_interp_points), tck
+    )
 
     return upsampled_coords

@@ -10,18 +10,19 @@ import logging
 import os
 import random
 import sys
-from os.path import join as pjoin, exists
+from os.path import exists
+from os.path import join as pjoin
 from random import randint
 
 import nibabel as nib
 import numpy as np
 import torch
-from dipy.io.stateful_tractogram import StatefulTractogram, Space
+from dipy.io.stateful_tractogram import Space, StatefulTractogram
 from dipy.io.streamline import save_tractogram
 from nibabel.streamlines import ArraySequence
 from scilpy.io.utils import (
-    add_verbose_arg,
     add_overwrite_arg,
+    add_verbose_arg,
     load_matrix_in_any_format,
 )
 from scilpy.tracking.tools import filter_streamlines_by_length
@@ -29,17 +30,17 @@ from scilpy.utils.streamlines import transform_warp_sft
 from tqdm import tqdm
 
 from tractolearn.filtering.streamline_space_filtering import (
-    filter_grid_roi,
     StreamlineLocalOrientationAnalyzer,
     StreamlineLocalOrientationChecker,
     cut_streamlines_outside_mask,
+    filter_grid_roi,
 )
 from tractolearn.generative.generate_points import generate_points
-from tractolearn.logger import _set_up_logger, LoggerKeys
+from tractolearn.logger import LoggerKeys, _set_up_logger
 from tractolearn.models.model_pool import get_model
 from tractolearn.tractoio.utils import (
-    read_data_from_json_file,
     load_streamlines,
+    read_data_from_json_file,
     save_streamlines,
 )
 from tractolearn.utils.timer import Timer
@@ -166,7 +167,9 @@ def _build_arg_parser():
         type=int,
         default=220,
     )
-    parser.add_argument("-p", "--plot_umaps", help="Plot umaps", action="store_true")
+    parser.add_argument(
+        "-p", "--plot_umaps", help="Plot umaps", action="store_true"
+    )
     parser.add_argument(
         "-a",
         "--generate_all_bundles",
@@ -223,13 +226,17 @@ def main():
 
     if exists(args.output):
         if not args.overwrite:
-            print(f"Outputs directory {args.output} exists. Use -f to for overwriting.")
+            print(
+                f"Outputs directory {args.output} exists. Use -f to for overwriting."
+            )
             sys.exit(1)
     else:
         os.makedirs(args.output)
 
     if args.verbose:
-        logging.basicConfig(level=logging.INFO if args.verbose == 1 else logging.DEBUG)
+        logging.basicConfig(
+            level=logging.INFO if args.verbose == 1 else logging.DEBUG
+        )
 
     logger.info(args)
 
@@ -247,7 +254,9 @@ def main():
     streamline_classes = read_data_from_json_file(args.anatomy_file)
     degree_config = read_data_from_json_file(args.degree)
     ratio_config = read_data_from_json_file(args.ratio)
-    max_total_sampling_config = read_data_from_json_file(args.max_total_sampling)
+    max_total_sampling_config = read_data_from_json_file(
+        args.max_total_sampling
+    )
     num_generated_streamlines_config = read_data_from_json_file(
         args.num_generated_streamlines
     )
@@ -280,7 +289,9 @@ def main():
         key = [k for k in streamline_classes if k in f][0]
 
         logger.info(f"Generating: {key}")
-        mni_bundle_file = [file for file in args.in_bundles_common_space if key in file]
+        mni_bundle_file = [
+            file for file in args.in_bundles_common_space if key in file
+        ]
 
         if len(mni_bundle_file) > 1:
             raise ValueError(
@@ -336,7 +347,9 @@ def main():
         else:
             X_a = None
 
-        logger.info(f"Generating {num_generated_streamlines_config[key]} streamlines")
+        logger.info(
+            f"Generating {num_generated_streamlines_config[key]} streamlines"
+        )
 
         assert (X_f is not None) or (
             X_a is not None
@@ -381,7 +394,7 @@ def main():
                 X_f_generated, args.reference_common_space, space=Space.RASMM
             )
 
-            logger.info(f"Hair Cut")
+            logger.info("Hair Cut")
             with Timer():
                 X_f_generated_cut = cut_streamlines_outside_mask(
                     tractogram,
@@ -390,7 +403,9 @@ def main():
                 )
 
             tractogram = StatefulTractogram(
-                X_f_generated_cut, args.reference_common_space, space=Space.RASMM
+                X_f_generated_cut,
+                args.reference_common_space,
+                space=Space.RASMM,
             )
 
             save_tractogram(
@@ -399,13 +414,15 @@ def main():
                 bbox_valid_check=False,
             )
 
-            logger.info(f"White matter mask filtering")
+            logger.info("White matter mask filtering")
 
             if white_matter_config[key] == "wm":
-                logger.info(f"Using WM mask")
-                wm_image = nib.load(args.wm_parc_common_space).get_fdata("unchanged")
+                logger.info("Using WM mask")
+                wm_image = nib.load(args.wm_parc_common_space).get_fdata(
+                    "unchanged"
+                )
             elif white_matter_config[key] == "fa":
-                logger.info(f"Using thresholded fa mask")
+                logger.info("Using thresholded fa mask")
                 wm_image = (
                     nib.load(args.fa_common_space).get_fdata("unchanged")
                     > args.threshold_fa
@@ -430,7 +447,7 @@ def main():
                 pjoin(args.output, f"{key}_generated_filtered_mask.trk"),
             )
 
-            logger.info(f"Registering in native.")
+            logger.info("Registering in native.")
             transfo = load_matrix_in_any_format(args.in_transfo)
             deformation_data = np.squeeze(
                 nib.load(args.in_deformation).get_fdata(dtype=np.float32)
@@ -449,7 +466,7 @@ def main():
 
             with Timer():
                 local_orient_analyzer = StreamlineLocalOrientationAnalyzer()
-                logger.info(f"Orientation filtering")
+                logger.info("Orientation filtering")
                 local_orient_checker = StreamlineLocalOrientationChecker(
                     local_orient_analyzer=local_orient_analyzer,
                     allowed_angle=degree_config[key],
@@ -463,7 +480,9 @@ def main():
 
             save_streamlines(
                 X_f_generated_cut[
-                    local_orient_checker._compliant_indices["LOCAL_ORIENTATION_ANGLE"]
+                    local_orient_checker._compliant_indices[
+                        "LOCAL_ORIENTATION_ANGLE"
+                    ]
                 ],
                 args.reference_common_space,
                 pjoin(args.output, f"{key}_generated_filtered_fodf.trk"),
@@ -490,7 +509,9 @@ def main():
             )
 
             with Timer():
-                new_sft = filter_streamlines_by_length(sft, args.minL, args.maxL)
+                new_sft = filter_streamlines_by_length(
+                    sft, args.minL, args.maxL
+                )
             streamline_count += len(new_sft)
 
             if streamline_count > num_generated_streamlines_config[key]:
@@ -500,7 +521,8 @@ def main():
                             list(sft.streamlines),
                             len(new_sft)
                             - (
-                                streamline_count - num_generated_streamlines_config[key]
+                                streamline_count
+                                - num_generated_streamlines_config[key]
                             ),
                         )
                     ),
@@ -511,7 +533,9 @@ def main():
 
             ori_len = len(new_sft)
             new_sft.remove_invalid_streamlines()
-            logger.info("Removed {} invalid streamlines".format(ori_len - len(new_sft)))
+            logger.info(
+                "Removed {} invalid streamlines".format(ori_len - len(new_sft))
+            )
             save_tractogram(
                 new_sft,
                 pjoin(

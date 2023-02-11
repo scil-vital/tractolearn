@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import enum
 from typing import Tuple
 
 import numpy as np
@@ -10,7 +9,9 @@ from nibabel.nifti1 import Nifti1Image
 from nibabel.streamlines.array_sequence import ArraySequence
 
 from tractolearn.visualization.scene_utils import compose_scene
-from tractolearn.visualization.utils import transform_streamlines_according_to_target
+from tractolearn.visualization.utils import (
+    transform_streamlines_according_to_target,
+)
 
 
 # ToDo

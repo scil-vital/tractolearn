@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
-from typing import Tuple
-
 from fury import window
 
 from tractolearn.visualization.utils import AnatomicalView
 
 
-def transform_scene_focal_point(scene, anatomical_view=AnatomicalView.AXIAL_SUPERIOR):
+def transform_scene_focal_point(
+    scene, anatomical_view=AnatomicalView.AXIAL_SUPERIOR
+):
 
     # Re-initialize camera
     position = [0, 0, 1]

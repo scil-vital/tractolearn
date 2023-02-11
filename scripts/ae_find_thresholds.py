@@ -10,12 +10,12 @@ import logging
 import os
 import shutil
 from os.path import join as pjoin
-from typing import Tuple, List
+from typing import List, Tuple
 
 import numpy as np
 import torch
 import yaml
-from scilpy.io.utils import add_verbose_arg, add_overwrite_arg
+from scilpy.io.utils import add_overwrite_arg, add_verbose_arg
 from tqdm import tqdm
 
 from tractolearn.config.experiment import ThresholdTestKeys
@@ -24,8 +24,8 @@ from tractolearn.filtering.latent_space_distance_informer import (
 )
 from tractolearn.filtering.latent_space_featuring import (
     ROCSalientPoint,
-    plot_latent_space,
     find_tractogram_filtering_threshold_v2,
+    plot_latent_space,
 )
 from tractolearn.learning.dataset import OnTheFlyDataset
 from tractolearn.logger import LoggerKeys, _set_up_logger
@@ -43,7 +43,9 @@ torch.set_flush_denormal(True)
 logger = logging.getLogger("root")
 
 
-def sort_streamline_per_bundle(X: np.array, y: np.array) -> Tuple[np.array, np.array]:
+def sort_streamline_per_bundle(
+    X: np.array, y: np.array
+) -> Tuple[np.array, np.array]:
     indices = y.argsort()
     y_sorted = y[indices]
     X_sorted = X[indices]
@@ -67,7 +69,9 @@ def separate_pl_impl(streamlines_dict: dict, key_list: List):
     return x_plaus, x_implaus, y_plaus, y_implaus
 
 
-def separate_pl_impl_latent(latent_dict: dict, key_list: List, latent_dims: int = 32):
+def separate_pl_impl_latent(
+    latent_dict: dict, key_list: List, latent_dims: int = 32
+):
     x_plaus = np.empty((0, latent_dims))
     x_implaus = np.empty((0, latent_dims))
     y_plaus = np.empty((0,))
@@ -141,8 +145,12 @@ def set_threshold(
 
         os.makedirs(pjoin(experiment_dir, k))
 
-        indices_plausible = np.argwhere(y_all == streamline_classes[k]).squeeze()
-        indices_implausible = np.argwhere(y_all != streamline_classes[k]).squeeze()
+        indices_plausible = np.argwhere(
+            y_all == streamline_classes[k]
+        ).squeeze()
+        indices_implausible = np.argwhere(
+            y_all != streamline_classes[k]
+        ).squeeze()
         y_thres_plaus = y_all[indices_plausible]
         y_thres_implaus = y_all[indices_implausible]
         plaus_streamlines_latent_distances = distances[indices_plausible]
@@ -170,7 +178,7 @@ def set_threshold(
         except Exception as e:
             logger.info(f"Catched exception: {e}")
             logger.info(f"Bundle: {k}")
-            logger.info(f"Setting threshold to 0")
+            logger.info("Setting threshold to 0")
             threshold = 0
 
         threshold_dict[k] = threshold
@@ -252,11 +260,15 @@ def main():
     _set_up_logger(logger_fname)
 
     if args.verbose:
-        logging.basicConfig(level=logging.INFO if args.verbose == 1 else logging.DEBUG)
+        logging.basicConfig(
+            level=logging.INFO if args.verbose == 1 else logging.DEBUG
+        )
 
     logger.info(" +++ Loading generic files +++")
 
-    valid_bundles_files = os.listdir(config[ThresholdTestKeys.VALID_BUNDLE_PATH])
+    valid_bundles_files = os.listdir(
+        config[ThresholdTestKeys.VALID_BUNDLE_PATH]
+    )
     atlas_files = os.listdir(config[ThresholdTestKeys.ATLAS_PATH])
 
     checkpoint = torch.load(
@@ -287,7 +299,9 @@ def main():
 
     if config[ThresholdTestKeys.MAX_IMPLAUSIBLE] is not None:
         if config[ThresholdTestKeys.MAX_IMPLAUSIBLE] < X_impl.shape[0]:
-            logger.info(f" +++ Subsampling Threshold Implausible Streamlines  +++")
+            logger.info(
+                " +++ Subsampling Threshold Implausible Streamlines  +++"
+            )
             indices = np.random.choice(
                 X_impl.shape[0],
                 size=config[ThresholdTestKeys.MAX_IMPLAUSIBLE],
@@ -325,9 +339,13 @@ def main():
 
         a = [i for i in atlas_files if i == f][0]
 
-        threshold_bundle_file = pjoin(config[ThresholdTestKeys.VALID_BUNDLE_PATH], f)
+        threshold_bundle_file = pjoin(
+            config[ThresholdTestKeys.VALID_BUNDLE_PATH], f
+        )
 
-        logger.info(f" +++ Loading Threshold Bundle File: {threshold_bundle_file} +++")
+        logger.info(
+            f" +++ Loading Threshold Bundle File: {threshold_bundle_file} +++"
+        )
 
         X_f_not_flipped, y_f_not_flipped = load_streamlines(
             threshold_bundle_file,
@@ -351,10 +369,14 @@ def main():
 
         if config[ThresholdTestKeys.MAX_PLAUSIBLE] is not None:
             assert 0 < config[ThresholdTestKeys.MAX_PLAUSIBLE] <= 1
-            logger.info(f" +++ Subsampling Threshold Plausible Streamlines  +++")
+            logger.info(
+                " +++ Subsampling Threshold Plausible Streamlines  +++"
+            )
             indices = np.random.choice(
                 X_f.shape[0],
-                size=int(config[ThresholdTestKeys.MAX_PLAUSIBLE] * X_f.shape[0]),
+                size=int(
+                    config[ThresholdTestKeys.MAX_PLAUSIBLE] * X_f.shape[0]
+                ),
                 replace=False,
             )
             X_f = X_f[indices]
@@ -414,7 +436,7 @@ def main():
         latent_all = np.vstack((latent_all, latent_a))
         y_latent_all = np.hstack((y_latent_all, y_latent_a))
 
-    logger.info(f" +++ Encoding Threshold Implausible Streamlines +++")
+    logger.info(" +++ Encoding Threshold Implausible Streamlines +++")
 
     impl_dataset = OnTheFlyDataset(X_impl, y_impl)
     impl_dataloader = torch.utils.data.DataLoader(
@@ -422,7 +444,7 @@ def main():
     )
     latent_impl, y_latent_impl = encode_data(impl_dataloader, device, model)
 
-    logger.info(f" +++ Stacking implausible streamlines +++")
+    logger.info(" +++ Stacking implausible streamlines +++")
     latent_all_f = np.vstack((latent_impl, latent_all_f))
     y_latent_all_f = np.hstack((y_latent_impl, y_latent_all_f))
     class_names.insert(0, "implausible")
@@ -430,13 +452,15 @@ def main():
     latent_thres_dict["implausible"] = (latent_impl, y_latent_impl)
     streamlines_dict["implausible"] = (X_impl, y_impl)
 
-    fname_root = pjoin(experiment_dir, LoggerKeys.latent_plot_fname_label + "_trk")
+    fname_root = pjoin(
+        experiment_dir, LoggerKeys.latent_plot_fname_label + "_trk"
+    )
     fname_root_atlas = pjoin(
         experiment_dir, LoggerKeys.latent_plot_fname_label + "_trk_atlas"
     )
 
     if config[ThresholdTestKeys.VIZ]:
-        logger.info(f" +++ Latent Space Visualisation  +++")
+        logger.info(" +++ Latent Space Visualisation  +++")
         plot_latent_space(
             latent_all_f,
             y_latent_all_f,
@@ -462,7 +486,9 @@ def main():
         experiment_dir,
     )
 
-    save_data_to_json_file(thresholds_dict, pjoin(experiment_dir, "thresholds.json"))
+    save_data_to_json_file(
+        thresholds_dict, pjoin(experiment_dir, "thresholds.json")
+    )
 
     logger.info("Thresholds saved !")
 
