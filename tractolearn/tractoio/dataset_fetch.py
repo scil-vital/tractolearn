@@ -474,6 +474,70 @@ fetch_tractoinferno_hcp_ref_tractography = (
 )
 
 
+def get_fetcher_method(name):
+    """Provide the fetcher method corresponding to the method name.
+
+    Returns
+    -------
+    callable
+        Fetcher method.
+    """
+
+    if name == Dataset.BUNDLE_LABEL_CONFIG.name:
+        return fetch_bundle_label_config
+    elif name == Dataset.CONTRASTIVE_AUTOENCODER_WEIGHTS.name:
+        return fetch_contrastive_ae_weights
+    elif name == Dataset.MNI2009CNONLINSYMM_ANAT.name:
+        return fetch_mni2009cnonlinsymm_anat
+    elif name == Dataset.GENERATIVE_LOA_CONE_CONFIG.name:
+        return fetch_generative_loa_cone_config
+    elif name == Dataset.GENERATIVE_SEED_STRML_RATIO_CONFIG.name:
+        return fetch_generative_seed_streamline_ratio_config
+    elif name == Dataset.GENERATIVE_STRML_MAX_COUNT_CONFIG.name:
+        return fetch_generative_streamline_max_count_config
+    elif name == Dataset.GENERATIVE_STRML_RQ_COUNT_CONFIG.name:
+        return fetch_generative_streamline_req_count_config
+    elif name == Dataset.GENERATIVE_WM_TISSUE_CRITERION_CONFIG.name:
+        return fetch_generative_wm_tisue_criterion_config
+    elif name == Dataset.RECOBUNDLESX_ATLAS.name:
+        return fetch_recobundlesx_atlas
+    elif name == Dataset.RECOBUNDLESX_CONFIG.name:
+        return fetch_recobundlesx_config
+    elif name == Dataset.TRACTOINFERNO_HCP_CONTRASTIVE_THR_CONFIG.name:
+        return fetch_tractoinferno_hcp_contrastive_threshold_config
+    elif name == Dataset.TRACTOINFERNO_HCP_REF_TRACTOGRAPHY.name:
+        return fetch_tractoinferno_hcp_ref_tractography
+    else:
+        raise DatasetError(_unknown_dataset_msg(name))
+
+
+def provide_dataset_description():
+    """Provide the description of the available datasets.
+
+    Returns
+    -------
+    descr : list
+        Dataset value, description and URL tuples.
+    """
+
+    url_idx = 1
+    descr_idx = 5
+    descr = list()
+
+    for elem in list(Dataset):
+        params = get_fetcher_method(elem.name)
+        descr.append(
+            elem.value
+            + ": "
+            + params[descr_idx]
+            + ": "
+            + params[url_idx]
+            + "\n"
+        )
+
+    return descr
+
+
 def retrieve_dataset(name, path):
     """Retrieve the given dataset to the provided path.
 

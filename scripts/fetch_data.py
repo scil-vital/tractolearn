@@ -4,14 +4,19 @@
 import argparse
 from pathlib import Path
 
-from tractolearn.tractoio.dataset_fetch import Dataset, retrieve_dataset
+from tractolearn.tractoio.dataset_fetch import (
+    Dataset,
+    provide_dataset_description,
+    retrieve_dataset,
+)
 
 
 def _build_arg_parser():
 
     parser = argparse.ArgumentParser(
-        description="Fetch tractolearn dataset",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+        description="Fetch tractolearn dataset.\n\nDetails (name: description: URL):\n\t"
+        + "\t".join(provide_dataset_description()),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
         "dastaset_name",
