@@ -104,11 +104,14 @@ def main():
     random.seed(seed)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    # TODO: Find a better way to import API key (eventually remove comet.ml)
-    logger.info(comet_ml.get_comet_version())
-    experiment_recorder = experiment.record_experiment(
-        api_key=os.environ["COMETML"]
-    )
+    experiment_recorder = None
+    log_to_comet = experiment.log_to_comet
+    if log_to_comet:
+        # TODO: Find a better way to import API key (eventually remove comet.ml)
+        logger.info(comet_ml.get_comet_version())
+        experiment_recorder = experiment.record_experiment(
+            api_key=os.environ["COMETML"]
+        )
 
     ref_anat_img = nib.load(experiment_dict["ref_anat_fname"])
     isocenter = compute_isocenter(ref_anat_img)
@@ -140,7 +143,7 @@ def main():
         (data_manager.point_dims, data_manager.num_points),
         isocenter,
         volume,
-        experiment_recorder,
+        experiment_recorder=experiment_recorder,
     )
 
     logger.info("Finished building model and trainer.")
@@ -148,9 +151,13 @@ def main():
     # Start training run
     logger.info("Starting training...")
     for epoch in range(1, experiment_dict["epochs"] + 1):
-        with experiment_recorder.train():
+        if log_to_comet:
+            with experiment_recorder.train():
+                trainer.train(epoch)
+            with experiment_recorder.validate():
+                trainer.valid(epoch)
+        else:
             trainer.train(epoch)
-        with experiment_recorder.validate():
             trainer.valid(epoch)
 
         # Project the valid set
@@ -174,9 +181,10 @@ def main():
             experiment_dict["rbx_classes"],
         )
         # Log the latent space plot to Comet
-        experiment_recorder.log_image(
-            latent_plot_filename, name="latent_umap", step=epoch
-        )
+        if log_to_comet:
+            experiment_recorder.log_image(
+                latent_plot_filename, name="latent_umap", step=epoch
+            )
 
     logger.info("Finished training.")
     torch.cuda.empty_cache()

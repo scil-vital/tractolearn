@@ -78,6 +78,7 @@ class ExperimentKeys:
     NUM_WORKERS = "num_workers"
     DISTANCE_FUNCTION = "distance_function"
     TO_SWAP = "to_swap"
+    LOG_TO_COMET = "log_to_comet"
 
 
 class ThresholdTestKeys:
@@ -167,6 +168,10 @@ class ExperimentFormatter:
         )
         # Copy the YAML configuration file to the experiment directory
         shutil.copy(config, self.experiment_dir)
+
+    @property
+    def log_to_comet(self):
+        return self.config[ExperimentKeys.LOG_TO_COMET]
 
     def setup_experiment(self):
 

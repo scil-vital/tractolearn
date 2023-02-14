@@ -43,5 +43,7 @@ weights:
 viz: False
 viz_num_batches: 10
 
+# Whether the experiment is to be logged to Comet ML
+log_to_comet: False
 
 num_workers: 24
