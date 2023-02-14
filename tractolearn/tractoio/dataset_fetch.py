@@ -556,42 +556,14 @@ def retrieve_dataset(name, path):
 
     logger.info(f"\nDataset: {name}")
 
-    if name == Dataset.BUNDLE_LABEL_CONFIG.name:
-        params = fetch_bundle_label_config
-        files, folder = _make_fetcher(path, *params)()
-        return pjoin(folder, list(files.keys())[0])
-    elif name == Dataset.CONTRASTIVE_AUTOENCODER_WEIGHTS.name:
-        params = fetch_contrastive_ae_weights
-        files, folder = _make_fetcher(path, *params)()
-        return pjoin(folder, list(files.keys())[0])
-    elif name == Dataset.MNI2009CNONLINSYMM_ANAT.name:
-        params = fetch_mni2009cnonlinsymm_anat
-        files, folder = _make_fetcher(path, *params)()
-        return pjoin(folder, list(files.keys())[0])
-    elif name == Dataset.GENERATIVE_LOA_CONE_CONFIG.name:
-        params = fetch_generative_loa_cone_config
-        files, folder = _make_fetcher(path, *params)()
-        return pjoin(folder, list(files.keys())[0])
-    elif name == Dataset.GENERATIVE_SEED_STRML_RATIO_CONFIG.name:
-        params = fetch_generative_seed_streamline_ratio_config
-        files, folder = _make_fetcher(path, *params)()
-        return pjoin(folder, list(files.keys())[0])
-    elif name == Dataset.GENERATIVE_STRML_MAX_COUNT_CONFIG.name:
-        params = fetch_generative_streamline_max_count_config
-        files, folder = _make_fetcher(path, *params)()
-        return pjoin(folder, list(files.keys())[0])
-    elif name == Dataset.GENERATIVE_STRML_RQ_COUNT_CONFIG.name:
-        params = fetch_generative_streamline_req_count_config
-        files, folder = _make_fetcher(path, *params)()
-        return pjoin(folder, list(files.keys())[0])
-    elif name == Dataset.GENERATIVE_WM_TISSUE_CRITERION_CONFIG.name:
-        params = fetch_generative_wm_tisue_criterion_config
-        files, folder = _make_fetcher(path, *params)()
-        return pjoin(folder, list(files.keys())[0])
-    elif name == Dataset.RECOBUNDLESX_ATLAS.name:
-        params = fetch_recobundlesx_atlas
-        files, folder = _make_fetcher(path, *params)()
-        fnames = files["atlas.zip"][2]
+    params = get_fetcher_method(name)
+    files, folder = _make_fetcher(path, *params)()
+
+    file_basename = list(files.keys())[0]
+
+    # Check if the file is a ZIP file
+    if zipfile.is_zipfile(pjoin(folder, file_basename)):
+        fnames = files[file_basename][1]
         return sorted(
             [
                 pjoin(folder, f)
@@ -599,18 +571,5 @@ def retrieve_dataset(name, path):
                 if os.path.isfile(pjoin(folder, f))
             ]
         )
-    elif name == Dataset.RECOBUNDLESX_CONFIG.name:
-        params = fetch_recobundlesx_config
-        files, folder = _make_fetcher(path, *params)()
-        fnames = files["config.zip"][2]
-        return sorted([pjoin(folder, f) for f in fnames])
-    elif name == Dataset.TRACTOINFERNO_HCP_CONTRASTIVE_THR_CONFIG.name:
-        params = fetch_tractoinferno_hcp_contrastive_threshold_config
-        files, folder = _make_fetcher(path, *params)()
-        return pjoin(folder, list(files.keys())[0])
-    elif name == Dataset.TRACTOINFERNO_HCP_REF_TRACTOGRAPHY.name:
-        params = fetch_tractoinferno_hcp_ref_tractography
-        files, folder = _make_fetcher(path, *params)()
-        return pjoin(folder, list(files.keys())[0])
     else:
-        raise DatasetError(_unknown_dataset_msg(name))
+        return pjoin(folder, file_basename)
