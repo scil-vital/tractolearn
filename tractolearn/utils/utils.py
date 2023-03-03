@@ -21,5 +21,7 @@ def make_run_dir(out_path=None):
 
 def generate_uuid():
 
-    eventid = datetime.datetime.now().strftime("%Y%m%d-%H%M%S-%f-") + str(uuid4())
+    eventid = datetime.datetime.now().strftime("%Y%m%d-%H%M%S-%f-") + str(
+        uuid4()
+    )
     return eventid

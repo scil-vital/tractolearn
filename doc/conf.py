@@ -11,11 +11,12 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
-# import sys
-import tomli
+from datetime import datetime
 from importlib.metadata import version
 
-from datetime import datetime
+# import sys
+import tomli
+
 # sys.path.insert(0, os.path.abspath('.'))
 
 # Load the release info into a dict by explicit execution

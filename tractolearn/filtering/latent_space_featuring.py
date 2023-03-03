@@ -12,23 +12,21 @@ from matplotlib.lines import Line2D
 from matplotlib.markers import MarkerStyle
 from numpy import interp
 from scipy.stats import mode
-from sklearn.metrics import (
-    classification_report,
-    roc_auc_score,
-    roc_curve,
-)
+from sklearn.metrics import classification_report, roc_auc_score, roc_curve
 from sklearn.preprocessing import MinMaxScaler
 from tqdm import tqdm
-from tractolearn.anatomy.bundles_additional_labels import BundlesAdditionalLabels
 
-from tractolearn.logger import LoggerKeys
+from tractolearn.anatomy.bundles_additional_labels import (
+    BundlesAdditionalLabels,
+)
 from tractolearn.filtering import LatentSpaceKeys
 from tractolearn.filtering.latent_space_distance_informer import (
     LatentSpaceDistanceInformer,
 )
+from tractolearn.logger import LoggerKeys
 from tractolearn.tractoio.utils import (
-    save_streamlines,
     save_data_to_pickle_file,
+    save_streamlines,
 )
 from tractolearn.utils.layer_utils import PredictWrapper
 from tractolearn.visualization.plot_utils import (
@@ -336,14 +334,18 @@ def plot_latent_space(
     # plot implausible as black empty circles
     mask = np.array(classes) == 0
     m = MarkerStyle(marker="o", fillstyle="none")
-    plt.scatter(umap_results[mask, 0], umap_results[mask, 1], color=(0, 0, 0), marker=m)
+    plt.scatter(
+        umap_results[mask, 0], umap_results[mask, 1], color=(0, 0, 0), marker=m
+    )
 
     # plot selected classes with colors
     colors = list(plt.cm.tab20(np.arange(20)))
     plt.gca().set_prop_cycle("color", colors)
     for class_name, class_idx in selected_classes:
         mask = np.array(classes) == class_idx
-        plt.scatter(umap_results[mask, 0], umap_results[mask, 1], label=class_name)
+        plt.scatter(
+            umap_results[mask, 0], umap_results[mask, 1], label=class_name
+        )
 
     plt.legend()
     plt.title("Latent space UMAP (latent dim={})".format(latent_space_dims))
@@ -352,7 +354,9 @@ def plot_latent_space(
     fig.savefig(filename, bbox_inches="tight")
     plt.close(fig)
 
-    logger.debug("Finished generating UMAP latent space plot to:\n{}".format(filename))
+    logger.debug(
+        "Finished generating UMAP latent space plot to:\n{}".format(filename)
+    )
 
     logger.info("Finished plotting latent space.")
 
@@ -383,8 +387,12 @@ def find_tractogram_filtering_threshold_v2(
     filtering_time_probe.update({"filtering_th": []})
     filtering_time_probe.update({"filter": []})
 
-    nearest_indices_implaus_class = y_latent_atlas_brain_plaus[nearest_indices_implaus]
-    nearest_indices_plaus_class = y_latent_atlas_brain_plaus[nearest_indices_plaus]
+    nearest_indices_implaus_class = y_latent_atlas_brain_plaus[
+        nearest_indices_implaus
+    ]
+    nearest_indices_plaus_class = y_latent_atlas_brain_plaus[
+        nearest_indices_plaus
+    ]
     indices_plausible_class = np.argwhere(
         nearest_indices_plaus_class == 1000 + current_class
     ).squeeze()
@@ -398,7 +406,8 @@ def find_tractogram_filtering_threshold_v2(
     y_thres_implaus_roc = y_thres_implaus[indices_implausible_class]
 
     roc_dict = roc_curve_computation(
-        (y_thres_plaus_roc >= 0).astype(np.float32) * bundles_classes_dict["plausible"],
+        (y_thres_plaus_roc >= 0).astype(np.float32)
+        * bundles_classes_dict["plausible"],
         (y_thres_implaus_roc >= 0).astype(np.float32)
         * bundles_classes_dict["implausible"],
         distances_plaus_roc,
@@ -413,7 +422,8 @@ def find_tractogram_filtering_threshold_v2(
         roc_dict,
         distances_plaus_roc,
         distances_implaus_roc,
-        (y_thres_plaus_roc >= 0).astype(np.float32) * bundles_classes_dict["plausible"],
+        (y_thres_plaus_roc >= 0).astype(np.float32)
+        * bundles_classes_dict["plausible"],
         (y_thres_implaus_roc >= 0).astype(np.float32)
         * bundles_classes_dict["implausible"],
         latent_space_dims,
@@ -561,7 +571,8 @@ def plot_filtering_threshold_features(
     )
 
     fname_root += (
-        LoggerKeys.underscore.value + LatentSpaceKeys.threshold_fname_label.value
+        LoggerKeys.underscore.value
+        + LatentSpaceKeys.threshold_fname_label.value
     )
     plot_latent_space_distance_features(
         plaus_streamlines_latent_distances,
@@ -601,7 +612,9 @@ def compute_filtering_roc_curve(
     # stacked in opposite orders
     # find_tractogram_filtering_threshold
     distances_orig = np.hstack([distances_plaus, distances_implaus])
-    y_track_classes = np.hstack([y_plaus_track_classes, y_implaus_track_classes])
+    y_track_classes = np.hstack(
+        [y_plaus_track_classes, y_implaus_track_classes]
+    )
 
     # The computation of the optimal threshold based on the computation of the
     # accuracy at each point of the ROC curve is computationally expensive.
@@ -625,7 +638,9 @@ def compute_filtering_roc_curve(
     scaler = MinMaxScaler(feature_range=feature_range)
 
     y_true[y_true < BundlesAdditionalLabels.invalid_connection_class.value] = 1
-    y_true[y_true == BundlesAdditionalLabels.invalid_connection_class.value] = 0
+    y_true[
+        y_true == BundlesAdditionalLabels.invalid_connection_class.value
+    ] = 0
     y_score = np.copy(distances).reshape(-1, 1)
 
     # Transform ranges
@@ -645,12 +660,16 @@ def compute_filtering_roc_curve(
     # the ROC curve computation has dropped a significant number of points),
     # we need to interpolate the values.
     if len(thresholds) < ROC_MIN_NUM_POINTS:
-        fpr_interp, tpr_interp = upsample_coords([fpr, tpr], ROC_MIN_NUM_POINTS)
+        fpr_interp, tpr_interp = upsample_coords(
+            [fpr, tpr], ROC_MIN_NUM_POINTS
+        )
         # Keeping the first upsampled FPR coordinates
         # ToDo
         # Investigate the differences between the upsampled horizontal
         # coordinates
-        _, thresholds_interp = upsample_coords([fpr, thresholds], ROC_MIN_NUM_POINTS)
+        _, thresholds_interp = upsample_coords(
+            [fpr, thresholds], ROC_MIN_NUM_POINTS
+        )
         fpr = fpr_interp
         tpr = tpr_interp
         thresholds = thresholds_interp
@@ -846,7 +865,9 @@ def plot_latent_space_distance_features(
     )
 
 
-def compute_maximum_accuracy_roc_threshold_index(thresholds, y_true, distances):
+def compute_maximum_accuracy_roc_threshold_index(
+    thresholds, y_true, distances
+):
 
     logger.info("Computing maximum accuracy ROC curve threshold index...")
 
@@ -859,7 +880,9 @@ def compute_maximum_accuracy_roc_threshold_index(thresholds, y_true, distances):
         y_pred = np.ones_like(y_true)
         y_pred[indices_implausibles] = 0
 
-        classif_report = classification_report(y_true, y_pred, output_dict=True)
+        classif_report = classification_report(
+            y_true, y_pred, output_dict=True
+        )
         thr_accuracy[thr] = classif_report["accuracy"]
 
     # Keep the point that achieves the best accuracy
@@ -870,7 +893,9 @@ def compute_maximum_accuracy_roc_threshold_index(thresholds, y_true, distances):
     ]
     max_accuracy_idx = np.argwhere(thresholds == max_acc_thr).ravel()
 
-    logger.info("Finished computing maximum accuracy ROC curve threshold " "index.")
+    logger.info(
+        "Finished computing maximum accuracy ROC curve threshold " "index."
+    )
 
     return max_accuracy_idx
 
@@ -892,7 +917,9 @@ def compute_optimal_roc_difference_index(tpr, fpr):
 
 def compute_optimal_roc_intersection_index(tpr, fpr):
 
-    logger.info("Computing optimal ROC-inverted diagonal intersection " "indices...")
+    logger.info(
+        "Computing optimal ROC-inverted diagonal intersection " "indices..."
+    )
 
     num_points = len(fpr)
     diagonal_y = np.linspace(1, 0, num_points)
@@ -903,7 +930,9 @@ def compute_optimal_roc_intersection_index(tpr, fpr):
     # diagonal_coords = np.column_stack([fpr, interp_y])
     # intersect_idx = find_intersection(tpr_coords, diagonal_coords)
 
-    intersect_idx = np.argwhere(np.diff(np.sign(tpr - interp_y)) != 0).reshape(-1)
+    intersect_idx = np.argwhere(np.diff(np.sign(tpr - interp_y)) != 0).reshape(
+        -1
+    )
 
     length = intersect_idx.size
 
@@ -981,7 +1010,9 @@ def plot_latent_space_histogram(
     fig = plt.figure(figsize=(12, 10))
     _ = plt.subplot(111)
     num_bins = 100  # len(distances)
-    n, bins, patches = plt.hist(classes_distances, bins=num_bins, density=False)
+    n, bins, patches = plt.hist(
+        classes_distances, bins=num_bins, density=False
+    )
 
     if len(unique_classes) == 1:
         for i, p in enumerate(patches):
@@ -998,7 +1029,9 @@ def plot_latent_space_histogram(
     # plt.title('Latent space distance histogram')
     long_dataset_name = get_dataset_long_name_from_dataset_name(dataset_name)
     plt.title(
-        "Latent space distance histogram\n(dataset: {})".format(long_dataset_name)
+        "Latent space distance histogram\n(dataset: {})".format(
+            long_dataset_name
+        )
     )
     # Make y-ticks be integers
     yint = []
@@ -1017,7 +1050,9 @@ def plot_latent_space_histogram(
     fig.savefig(filename)
     plt.close(fig)
 
-    logger.info("Finished plotting latent space histogram to:\n{}".format(filename))
+    logger.info(
+        "Finished plotting latent space histogram to:\n{}".format(filename)
+    )
 
 
 def plot_latent_space_stats(
@@ -1052,7 +1087,9 @@ def plot_latent_space_stats(
     unique_classes_ord = []
     for c in class_names:
         unique_classes_ord.append(bundles_classes_dict[c])
-    _, colors = _generate_plot_decorators(unique_classes_ord, class_names, cmap)
+    _, colors = _generate_plot_decorators(
+        unique_classes_ord, class_names, cmap
+    )
 
     # Separate the distances according to the bundle class to boxplot each
     # bundle's distances stats in a separate boxplot
@@ -1063,7 +1100,8 @@ def plot_latent_space_stats(
         classes_distances.append(class_distances)
 
     classes_distances = [
-        classes_distances[unique_classes_ord.index(c)] for c in unique_classes_ord
+        classes_distances[unique_classes_ord.index(c)]
+        for c in unique_classes_ord
     ]
 
     fig = plt.figure(figsize=(12, 10))
@@ -1084,7 +1122,9 @@ def plot_latent_space_stats(
     # plt.title('Latent space distance statistics')
     long_dataset_name = get_dataset_long_name_from_dataset_name(dataset_name)
     plt.title(
-        "Latent space distance statistics\n(dataset: {})".format(long_dataset_name)
+        "Latent space distance statistics\n(dataset: {})".format(
+            long_dataset_name
+        )
     )
 
     for box, color in zip(distances_bplot["boxes"], colors):
@@ -1112,7 +1152,9 @@ def plot_latent_space_stats(
     fig.savefig(filename)
     plt.close(fig)
 
-    logger.info("Finished plotting latent spaces stats to:\n{}".format(filename))
+    logger.info(
+        "Finished plotting latent spaces stats to:\n{}".format(filename)
+    )
 
 
 def _generate_plot_decorators(
@@ -1144,7 +1186,9 @@ def _generate_plot_decorators(
     point_color_lut = dict(
         {
             point_class: colormap_point
-            for point_class, colormap_point in zip(unique_classes, colormap_points)
+            for point_class, colormap_point in zip(
+                unique_classes, colormap_points
+            )
         }
     )
 
@@ -1184,7 +1228,10 @@ def _generate_plot_decorators(
         # ToDo
         # Improve this in case we have multiple foreign classes or to ensure
         # that there is only one
-        if foreign_class_color is None or elem not in foreign_class_color.keys():
+        if (
+            foreign_class_color is None
+            or elem not in foreign_class_color.keys()
+        ):
             color = cmap(point_color_lut[elem])
         else:
             color = foreign_class_color[elem]

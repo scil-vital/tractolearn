@@ -53,6 +53,8 @@ def reshape_peaks_for_computing(peak_dirs, peak_count, spatial_dims):
 
     # Peak orientation values (spatial dimensions) are set to the last
     # dimension (..., P, 3)
-    unfold_peak_dims = np.hstack([peak_dirs.shape[:3], peak_count, spatial_dims])
+    unfold_peak_dims = np.hstack(
+        [peak_dirs.shape[:3], peak_count, spatial_dims]
+    )
 
     return np.reshape(peak_dirs, unfold_peak_dims)

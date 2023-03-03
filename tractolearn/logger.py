@@ -23,9 +23,15 @@ class LoggerKeys(Enum):
     valid_data_fname_label = "valid_data"
     generic_streamline_data_fname_label = "generic_streamline"
 
-    test_data_batch_input_file_basename = test_data_fname_label + "_batch_input.png"
-    test_data_reconst_batch_file_basename = test_data_fname_label + "_reconst_batch.png"
-    test_data_reconst_tractogram_fname_root = test_data_fname_label + "_reconst"
+    test_data_batch_input_file_basename = (
+        test_data_fname_label + "_batch_input.png"
+    )
+    test_data_reconst_batch_file_basename = (
+        test_data_fname_label + "_reconst_batch.png"
+    )
+    test_data_reconst_tractogram_fname_root = (
+        test_data_fname_label + "_reconst"
+    )
 
     train_loss_data_file_basename = "train_loss.json"
     valid_loss_data_file_basename = "valid_loss.json"

@@ -5,8 +5,8 @@ import logging
 
 import nibabel as nib
 import numpy as np
-from dipy.tracking.streamline import set_number_of_points
 from dipy.tracking.metrics import downsample, length
+from dipy.tracking.streamline import set_number_of_points
 
 from tractolearn.tractomath.utils import is_normalized
 
@@ -118,7 +118,9 @@ def resample_streamlines(streamlines, num_points, arc_length=True):
 
     while len(ind) > 0 and len(resampled_streamline_points) < max_streamlines:
         i = ind.pop()
-        if lengths[i] >= min_length and (max_length <= 0.0 or lengths[i] <= max_length):
+        if lengths[i] >= min_length and (
+            max_length <= 0.0 or lengths[i] <= max_length
+        ):
             if num_points:
                 if arc_length:
                     line = set_number_of_points(streamlines[i], num_points)

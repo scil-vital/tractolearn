@@ -9,9 +9,11 @@ import torch
 from dipy.tracking.streamlinespeed import set_number_of_points
 from nibabel.streamlines import ArraySequence
 from torch.utils.data import Dataset, IterableDataset
-from tractolearn.transformation.streamline_transformation import flip_streamlines
 
 from tractolearn.config.experiment import ExperimentKeys
+from tractolearn.transformation.streamline_transformation import (
+    flip_streamlines,
+)
 
 logger = logging.getLogger("root")
 
@@ -48,7 +50,8 @@ class StreamlineClassificationDataset(IterableDataset):
         with h5py.File(self.h5_set_info[0], mode="r") as f:
             self.classes = list(f[self.h5_set_info[1]].keys())
             self.n_in_class = [
-                f[self.h5_set_info[1]][c]["streamline"].shape[0] for c in self.classes
+                f[self.h5_set_info[1]][c]["streamline"].shape[0]
+                for c in self.classes
             ]
             self.num_points = f[self.h5_set_info[1]][self.classes[0]][
                 "streamline"
@@ -67,7 +70,9 @@ class StreamlineClassificationDataset(IterableDataset):
 
     def get_random_streamline_from_class(self, class_idx):
         if self.h5_open is None:
-            h5_set = h5py.File(self.h5_set_info[0], mode="r")[self.h5_set_info[1]]
+            h5_set = h5py.File(self.h5_set_info[0], mode="r")[
+                self.h5_set_info[1]
+            ]
 
         i = self.rng.integers(
             self.n_in_class[class_idx]
@@ -96,7 +101,9 @@ class ContrastiveDataset(IterableDataset):
     """This dataset returns batches, not items. Should be used with batch_size=None"""
 
     def __init__(self, experiment_dict: dict, type_set: str, seed, num_pairs):
-        self.dataset = StreamlineClassificationDataset(experiment_dict, type_set, seed)
+        self.dataset = StreamlineClassificationDataset(
+            experiment_dict, type_set, seed
+        )
         self.num_pairs = num_pairs  # e.g. if this value is 4, there will be 4 positive pairs and 4 negative pairs
 
     @property
@@ -147,7 +154,9 @@ class ContrastiveDataset(IterableDataset):
         # Negative pairs
         negative1, negative2 = [], []
         for _ in range(self.num_pairs):
-            k1, k2 = self.rng.choice(len(self.dataset.classes), size=2, replace=False)
+            k1, k2 = self.rng.choice(
+                len(self.dataset.classes), size=2, replace=False
+            )
             x1 = self.dataset.get_random_streamline_from_class(k1)
             x2 = self.dataset.get_random_streamline_from_class(k2)
             negative1.append(x1)
@@ -203,7 +212,9 @@ class StreamlineClassificationDatasetTree(IterableDataset):
             p = random.uniform(0, 1)
 
             if p > 0.5:
-                positive = flip_streamlines(ArraySequence([positive])).get_data()
+                positive = flip_streamlines(
+                    ArraySequence([positive])
+                ).get_data()
 
         anchor = set_number_of_points(anchor, 256)
         positive = set_number_of_points(positive, 256)
@@ -361,7 +372,9 @@ class StreamlineClassificationDatasetTree(IterableDataset):
 
 
 class HierarchicalDataset(IterableDataset):
-    def __init__(self, experiment_dict: dict, type_set: str, seed: int, num_pairs: int):
+    def __init__(
+        self, experiment_dict: dict, type_set: str, seed: int, num_pairs: int
+    ):
         self.dataset = StreamlineClassificationDatasetTree(
             experiment_dict, type_set, seed
         )
@@ -398,7 +411,9 @@ class HierarchicalDataset(IterableDataset):
             # k = self.rng.choice(
             #     len(self.dataset.classes_clusters), replace=False
             # )
-            streamlines = self.dataset.get_random_streamline_from_class_without_merge()
+            streamlines = (
+                self.dataset.get_random_streamline_from_class_without_merge()
+            )
 
             anchors.append(streamlines[0])
             level1.append(streamlines[1])
@@ -430,7 +445,9 @@ class TripletDataset(ContrastiveDataset):
 
         anchors, positives, negatives = [], [], []
         for _ in range(self.num_pairs):
-            k1, k2 = self.rng.choice(len(self.dataset.classes), size=2, replace=False)
+            k1, k2 = self.rng.choice(
+                len(self.dataset.classes), size=2, replace=False
+            )
             a = self.dataset.get_random_streamline_from_class(k1)
             p = self.dataset.get_random_streamline_from_class(k1)
             n = self.dataset.get_random_streamline_from_class(k2)

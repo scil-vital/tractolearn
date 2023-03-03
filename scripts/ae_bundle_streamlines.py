@@ -5,38 +5,38 @@
 Script for used for the bundling of a whole-brain tractogram based on an autoencoder latent space
 """
 
-
 import argparse
 import logging
 import os
 import sys
-from os.path import join as pjoin, exists
+from math import ceil
+from os.path import exists
+from os.path import join as pjoin
 
 import numpy as np
 import torch
 from dipy.io.stateful_tractogram import Space
 from dipy.io.streamline import load_tractogram
-from scilpy.io.utils import add_verbose_arg, add_overwrite_arg
+from scilpy.io.utils import add_overwrite_arg, add_verbose_arg
 from scilpy.tracking.tools import resample_streamlines_num_points
 from tqdm import tqdm
-from tractolearn.logger import _set_up_logger, LoggerKeys
-from tractolearn.filtering.latent_space_featuring import filter_streamlines_only
+
+from tractolearn.filtering.latent_space_featuring import (
+    filter_streamlines_only,
+)
 from tractolearn.learning.dataset import OnTheFlyDataset
+from tractolearn.logger import LoggerKeys, _set_up_logger
 from tractolearn.models.autoencoding_utils import encode_data
 from tractolearn.models.model_pool import get_model
 from tractolearn.tractoio.utils import (
-    read_data_from_json_file,
     load_ref_anat_image,
     load_streamlines,
+    read_data_from_json_file,
 )
 from tractolearn.utils.timer import Timer
 
-
 torch.set_flush_denormal(True)
 logger = logging.getLogger("root")
-
-
-from math import ceil
 
 
 def batch_filtering(
@@ -101,7 +101,14 @@ def batch_filtering(
 
     for i in tqdm(range(batch_num)):
         with Timer():
-            if len(common_space_tractogram[i * batch_size : (i + 1) * batch_size]) == 0:
+            if (
+                len(
+                    common_space_tractogram[
+                        i * batch_size : (i + 1) * batch_size
+                    ]
+                )
+                == 0
+            ):
                 continue
             streamlines = resample_streamlines_num_points(
                 common_space_tractogram[i * batch_size : (i + 1) * batch_size],
@@ -125,7 +132,9 @@ def batch_filtering(
         y = np.arange(0, len(X))
 
         dataset = OnTheFlyDataset(X, y)
-        dataloader = torch.utils.data.DataLoader(dataset, batch_size=128, shuffle=False)
+        dataloader = torch.utils.data.DataLoader(
+            dataset, batch_size=128, shuffle=False
+        )
 
         latent_f, y_f = encode_data(dataloader, device, model)
         assert np.all(y == y_f)
@@ -218,7 +227,9 @@ def whole_filtering(
     y = np.arange(0, len(X))
 
     dataset = OnTheFlyDataset(X, y)
-    dataloader = torch.utils.data.DataLoader(dataset, batch_size=128, shuffle=False)
+    dataloader = torch.utils.data.DataLoader(
+        dataset, batch_size=128, shuffle=False
+    )
 
     latent_f, y_f = encode_data(dataloader, device, model)
     assert np.all(y == y_f)
@@ -331,13 +342,17 @@ def main():
 
     if exists(args.output):
         if not args.overwrite:
-            print(f"Outputs directory {args.output} exists. Use -f to for overwriting.")
+            print(
+                f"Outputs directory {args.output} exists. Use -f to for overwriting."
+            )
             sys.exit(1)
     else:
         os.makedirs(args.output)
 
     if args.verbose:
-        logging.basicConfig(level=logging.INFO if args.verbose == 1 else logging.DEBUG)
+        logging.basicConfig(
+            level=logging.INFO if args.verbose == 1 else logging.DEBUG
+        )
 
     if args.num_neighbors < 1:
         raise ValueError(
@@ -379,7 +394,9 @@ def main():
 
         key = f.split(".")[-2]
 
-        assert key in thresholds.keys(), f"[!] Threshold: {key} not in threshold file"
+        assert (
+            key in thresholds.keys()
+        ), f"[!] Threshold: {key} not in threshold file"
 
         X_a_not_flipped, y_a_not_flipped = load_streamlines(
             pjoin(args.atlas_path, f),
@@ -402,7 +419,9 @@ def main():
         y_a = np.hstack((y_a_not_flipped, y_a_flipped))
 
         dataset = OnTheFlyDataset(X_a, y_a)
-        dataloader = torch.utils.data.DataLoader(dataset, batch_size=128, shuffle=True)
+        dataloader = torch.utils.data.DataLoader(
+            dataset, batch_size=128, shuffle=True
+        )
 
         latent_a, y_latent_a = encode_data(dataloader, device, model)
 

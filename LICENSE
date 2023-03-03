@@ -11,7 +11,7 @@ plural forms of the terms defined:
 
 "Licensor" means Sherbrooke Connectivity Imaging Laboratory (SCIL).
 
-"Application" means all of the contents of the files with which this Agreement 
+"Application" means all of the contents of the files with which this Agreement
 is provided, including but not limited to (i) software; (ii)
 image files ("Databases").
 
@@ -33,9 +33,9 @@ modifications of the Application.
 2. Software License
 
 As long as you comply with the terms of this End User License Agreement (the
-"Agreement"), SCIL grants to you a world-wide, royalty-free and non-exclusive 
-license to Use the Application. Some third party materials included in the 
-Application may be subject to other terms and conditions, which are typically 
+"Agreement"), SCIL grants to you a world-wide, royalty-free and non-exclusive
+license to Use the Application. Some third party materials included in the
+Application may be subject to other terms and conditions, which are typically
 listed in "Third party license" part.
 
 2.1 General Use
@@ -74,7 +74,7 @@ Singularity (https://github.com/sylabs/singularity/blob/master/LICENSE.md)
 
 You may transfer all your rights to Use the Application
 to another person or legal entity provided that: (a) you also transfer this
-Agreement and the Application; (c) the receiving party accepts the terms and 
+Agreement and the Application; (c) the receiving party accepts the terms and
 conditions of this Agreement.
 
 4. NO WARRANTY

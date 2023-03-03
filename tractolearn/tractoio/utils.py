@@ -14,11 +14,13 @@ from dipy.io.streamline import load_tractogram, save_tractogram
 
 from tractolearn import anatomy
 from tractolearn.anatomy import BundleSettings
-from tractolearn.anatomy.bundles_additional_labels import BundlesAdditionalLabels
+from tractolearn.anatomy.bundles_additional_labels import (
+    BundlesAdditionalLabels,
+)
 from tractolearn.transformation.streamline_transformation import (
     flip_random_streamlines,
-    resample_streamlines,
     flip_streamlines,
+    resample_streamlines,
 )
 
 # fixme: FD
@@ -99,7 +101,9 @@ def load_bundles_dict(dataset_name):
         return None
 
 
-def write_bundles(anat_ref_fname, class_lookup, streamlines, predicted_classes, path):
+def write_bundles(
+    anat_ref_fname, class_lookup, streamlines, predicted_classes, path
+):
 
     shifted_origin = False
     space = Space.RASMM
@@ -117,7 +121,11 @@ def write_bundles(anat_ref_fname, class_lookup, streamlines, predicted_classes, 
         )
 
         tractogram_file_basename = (
-            bundle_label + underscore_sep + bundle_name + extension_sep + trk_extension
+            bundle_label
+            + underscore_sep
+            + bundle_name
+            + extension_sep
+            + trk_extension
         )
         fname = pjoin(path, tractogram_file_basename)
         save_tractogram(tractogram, fname)
@@ -157,7 +165,9 @@ def load_streamlines(
         )
 
     if resample:
-        streamlines = resample_streamlines(streamlines, num_points, arc_length=True)
+        streamlines = resample_streamlines(
+            streamlines, num_points, arc_length=True
+        )
 
     if flip_all_streamlines:
         streamlines = flip_streamlines(streamlines)
@@ -238,7 +248,9 @@ def load_process_streamlines2(
     elif streamline_class_name == "implausible":
         streamlines_class = 100
     else:
-        streamlines_class = BundlesAdditionalLabels.generic_streamline_class.value
+        streamlines_class = (
+            BundlesAdditionalLabels.generic_streamline_class.value
+        )
 
     streamlines_classes = np.hstack(
         [np.repeat(streamlines_class, len(flipped_streamlines))]
@@ -267,7 +279,10 @@ def load_data2(
 
 
 def save_streamlines(
-    streamlines, ref_anat_fname, tractogram_fname, data_per_streamline: dict = None
+    streamlines,
+    ref_anat_fname,
+    tractogram_fname,
+    data_per_streamline: dict = None,
 ):
 
     space = Space.RASMM
@@ -279,7 +294,9 @@ def save_streamlines(
     )
 
     bbox_valid_check = False
-    save_tractogram(tractogram, tractogram_fname, bbox_valid_check=bbox_valid_check)
+    save_tractogram(
+        tractogram, tractogram_fname, bbox_valid_check=bbox_valid_check
+    )
 
 
 def save_data_to_json_file(data, fname):
@@ -311,7 +328,9 @@ def read_data_from_pickle_file(fname):
         return pickle.load(f)
 
 
-def load_streamline_learning_data(fname, ref_anat_fname, anatomy, random_flip=False):
+def load_streamline_learning_data(
+    fname, ref_anat_fname, anatomy, random_flip=False
+):
 
     bundle_names = list(anatomy.keys())
     bundle_names.sort()
@@ -327,7 +346,9 @@ def load_streamline_learning_data(fname, ref_anat_fname, anatomy, random_flip=Fa
     if len(bundle_class) != 0:
         bundle_class = bundle_class[0]
 
-    data, _ = load_data2(fname, ref_anat_fname, bundle_class, random_flip=random_flip)
+    data, _ = load_data2(
+        fname, ref_anat_fname, bundle_class, random_flip=random_flip
+    )
 
     target = [anatomy[bundle_class]] * len(data)
     streamline_data.extend(data)

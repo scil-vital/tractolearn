@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 import logging
 from os.path import join as pjoin
 from time import time
@@ -19,8 +20,6 @@ from tqdm import tqdm
 
 from tractolearn.learning.dataset import OnTheFlyDataset
 from tractolearn.models.autoencoding_utils import encode_data
-from tractolearn.utils.timer import Timer
-
 
 torch.set_flush_denormal(True)
 logger = logging.getLogger("root")
@@ -88,10 +87,14 @@ class RejectionSampler:
 
         # Initialize kernel density estimate
         if kde_bw:
-            self.kde = KernelDensity(bandwidth=kde_bw, kernel=kernel).fit(self.data)
+            self.kde = KernelDensity(bandwidth=kde_bw, kernel=kernel).fit(
+                self.data
+            )
         else:
             if kde_bw_auto_estimation == "Cross-Validation":
-                logger.info("Cross-validating bandwidth of kernel density estimate...")
+                logger.info(
+                    "Cross-validating bandwidth of kernel density estimate..."
+                )
                 grid = GridSearchCV(
                     KernelDensity(kernel=kernel),
                     {"bandwidth": np.e ** np.linspace(-1, 1, 100)},
@@ -104,11 +107,14 @@ class RejectionSampler:
             elif kde_bw_auto_estimation == "Silverman1986":
                 sigma = np.std(self.data, ddof=1)
                 IQR = (
-                    np.percentile(self.data, q=75) - np.percentile(self.data, q=25)
+                    np.percentile(self.data, q=75)
+                    - np.percentile(self.data, q=25)
                 ) / 1.3489795003921634
                 m = np.minimum(sigma, IQR)
                 b = 0.9 * m / len(self.data) ** 0.2
-                self.kde = KernelDensity(bandwidth=b, kernel=kernel).fit(self.data)
+                self.kde = KernelDensity(bandwidth=b, kernel=kernel).fit(
+                    self.data
+                )
             else:
                 raise NotImplementedError(
                     "kde_bw_auto_estimation valid option are ['Cross-Validation', 'Silverman1986'], "
@@ -128,7 +134,9 @@ class RejectionSampler:
         # Init proposal distribution
         if self.proposal_distribution_name == "multivariate_normal":
             if proposal_distribution_params:
-                mean = np.full(data.shape[1], proposal_distribution_params["mean"])
+                mean = np.full(
+                    data.shape[1], proposal_distribution_params["mean"]
+                )
                 cov = proposal_distribution_params["cov"]
             else:
                 mean = np.mean(self.data, axis=0)
@@ -161,7 +169,9 @@ class RejectionSampler:
                     plt.plot(range_of_clusters, silhouette_avg, "bx-")
                     plt.xlabel("Values of K")
                     plt.ylabel("Silhouette score")
-                    plt.title(f"{bundle_name} Silhouette analysis For Optimal k")
+                    plt.title(
+                        f"{bundle_name} Silhouette analysis For Optimal k"
+                    )
                     plt.savefig(pjoin(output, f"{bundle_name}_silhouette.png"))
 
                     n_components = range_of_clusters[np.argmax(silhouette_avg)]
@@ -200,7 +210,9 @@ class RejectionSampler:
                 n_components=n_components, verbose=True, covariance_type=cov
             ).fit(self.data)
 
-            likelihood = np.e ** self.proposal_distribution.score_samples(self.data)
+            likelihood = np.e ** self.proposal_distribution.score_samples(
+                self.data
+            )
 
         else:
             raise NotImplementedError(
@@ -219,7 +231,9 @@ class RejectionSampler:
         # '3rd_quartile' factor is used when outliers in the initial samples
         # skew the ratio and cause an impossibly high scaling factor.
         if scaling_mode == "max":
-            self.scaling_factor = np.max(factors_between_data_and_proposal_distribution)
+            self.scaling_factor = np.max(
+                factors_between_data_and_proposal_distribution
+            )
         else:  # scaling_mode == '3rd_quartile'
             self.scaling_factor = np.percentile(
                 factors_between_data_and_proposal_distribution, 75
@@ -257,9 +271,13 @@ class RejectionSampler:
         nb_trials = 0
         while len(accepted_samples) < nb_samples:
             if self.proposal_distribution_name == "multivariate_normal":
-                sample = self.proposal_distribution.rvs(size=1, random_state=rng)
+                sample = self.proposal_distribution.rvs(
+                    size=1, random_state=rng
+                )
                 rand_likelihood_threshold = rng.uniform(
-                    0, self.scaling_factor * self.proposal_distribution.pdf(sample)
+                    0,
+                    self.scaling_factor
+                    * self.proposal_distribution.pdf(sample),
                 )
             elif self.proposal_distribution_name == "GMM":
                 self.proposal_distribution.set_params(
@@ -269,7 +287,10 @@ class RejectionSampler:
                 rand_likelihood_threshold = rng.uniform(
                     0,
                     self.scaling_factor
-                    * (np.e ** self.proposal_distribution.score_samples(sample)),
+                    * (
+                        np.e
+                        ** self.proposal_distribution.score_samples(sample)
+                    ),
                 )
                 sample = sample.squeeze()
             else:
@@ -334,7 +355,9 @@ class RejectionSampler:
         start = time()
         with Pool() as pool:
             sampling_result = tqdm(
-                pool.imap(lambda args: self._sample(*args), zip(batches, rngs)),
+                pool.imap(
+                    lambda args: self._sample(*args), zip(batches, rngs)
+                ),
                 total=len(batches),
                 desc="Sampling from observed data distribution with rejection sampling",
                 unit="batch",
@@ -459,7 +482,9 @@ def generate_points(
         dataloader_bundle = torch.utils.data.DataLoader(
             dataset_bundle, batch_size=128, shuffle=False
         )
-        latent_bundle, y_latent_bundle = encode_data(dataloader_bundle, device, model)
+        latent_bundle, y_latent_bundle = encode_data(
+            dataloader_bundle, device, model
+        )
 
         assert np.all(y_bundle == y_latent_bundle)
 
@@ -521,7 +546,9 @@ def generate_points(
                     bundle_seeds = latent_bundle
                 else:
                     bundle_idx = np.random.choice(
-                        len(latent_bundle), size=num_bundle_seeds, replace=False
+                        len(latent_bundle),
+                        size=num_bundle_seeds,
+                        replace=False,
                     )
                     bundle_seeds = latent_bundle[bundle_idx]
             else:
@@ -529,7 +556,9 @@ def generate_points(
                 if composition[1] != 0 and latent_atlas_bundle is not None:
                     num_bundle_seeds = int(
                         np.round(
-                            len(latent_atlas_bundle) * composition[0] / composition[1]
+                            len(latent_atlas_bundle)
+                            * composition[0]
+                            / composition[1]
                         )
                     )
 
@@ -552,7 +581,9 @@ def generate_points(
                     bundle_seeds = latent_bundle
                 else:
                     bundle_idx = np.random.choice(
-                        len(latent_bundle), size=num_bundle_seeds, replace=False
+                        len(latent_bundle),
+                        size=num_bundle_seeds,
+                        replace=False,
                     )
                     bundle_seeds = latent_bundle[bundle_idx]
 
@@ -573,7 +604,9 @@ def generate_points(
                     if composition[0] != 0 and latent_bundle is not None:
                         maximum_allowed_atlas_seeds = int(
                             np.round(
-                                len(latent_bundle) * composition[1] / composition[0]
+                                len(latent_bundle)
+                                * composition[1]
+                                / composition[0]
                             )
                         )
 
@@ -593,21 +626,29 @@ def generate_points(
                     atlas_seeds = latent_atlas_bundle
                 else:
                     atlas_idx = np.random.choice(
-                        len(latent_atlas_bundle), size=num_atlas_seeds, replace=False
+                        len(latent_atlas_bundle),
+                        size=num_atlas_seeds,
+                        replace=False,
                     )
                     atlas_seeds = latent_atlas_bundle[atlas_idx]
             else:
                 num_atlas_seeds = len(latent_atlas_bundle)
                 if composition[0] != 0 and latent_bundle is not None:
                     num_atlas_seeds = int(
-                        np.round(len(latent_bundle) * composition[1] / composition[0])
+                        np.round(
+                            len(latent_bundle)
+                            * composition[1]
+                            / composition[0]
+                        )
                     )
 
                     if num_atlas_seeds > len(latent_atlas_bundle):
                         num_atlas_seeds = len(latent_atlas_bundle)
 
                 atlas_idx = np.random.choice(
-                    len(latent_atlas_bundle), size=num_atlas_seeds, replace=False
+                    len(latent_atlas_bundle),
+                    size=num_atlas_seeds,
+                    replace=False,
                 )
                 atlas_seeds = latent_atlas_bundle[atlas_idx]
 
@@ -622,7 +663,9 @@ def generate_points(
                     atlas_seeds = latent_atlas_bundle
                 else:
                     atlas_idx = np.random.choice(
-                        len(latent_atlas_bundle), size=num_atlas_seeds, replace=False
+                        len(latent_atlas_bundle),
+                        size=num_atlas_seeds,
+                        replace=False,
                     )
                     atlas_seeds = latent_atlas_bundle[atlas_idx]
 
@@ -665,16 +708,26 @@ def generate_points(
         if bandwidth is None:
             bandwidth = 0.025
         kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(seeds)
-        samples_kde = kde.sample(n_samples=num_generate_points, random_state=42)
+        samples_kde = kde.sample(
+            n_samples=num_generate_points, random_state=42
+        )
 
     if plot_seeds_generated:
         reducer = umap.UMAP(
-            random_state=0, min_dist=0.9, n_neighbors=100, n_epochs=1000, verbose=True
+            random_state=0,
+            min_dist=0.9,
+            n_neighbors=100,
+            n_epochs=1000,
+            verbose=True,
         )
-        umap_results_clusters = reducer.fit_transform(np.vstack((seeds, samples_kde)))
+        umap_results_clusters = reducer.fit_transform(
+            np.vstack((seeds, samples_kde))
+        )
         plt.figure(figsize=(12, 10))
 
-        plt.title(f"Bundle name: {name}   Epochs: 1000   min_dist: 0.9   n_neigh: 100 ")
+        plt.title(
+            f"Bundle name: {name}   Epochs: 1000   min_dist: 0.9   n_neigh: 100 "
+        )
 
         if num_atlas_seeds > 0:
             plt.scatter(
@@ -699,7 +752,7 @@ def generate_points(
         plt.scatter(
             umap_results_clusters[len(seeds) :, 0],
             umap_results_clusters[len(seeds) :, 1],
-            label=f"Generated",
+            label="Generated",
         )
 
         plt.legend()
