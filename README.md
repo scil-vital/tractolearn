@@ -17,11 +17,11 @@ Tractography learning.
 ## Installation
 
 To use tractolearn, it is recommended to create a virtual environment using
-python 3.8 that will host the necessary dependencies. Torch tested with an
+python 3.10 that will host the necessary dependencies. Torch tested with an
 NVIDIA RTX 3090 with:
 
 ```sh
-   virtualenv tractolearn_env --python=python3.8
+   virtualenv tractolearn_env --python=python3.10
    source tractolearn_env/bin/activate
 ```
 
