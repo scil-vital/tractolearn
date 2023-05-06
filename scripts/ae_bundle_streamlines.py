@@ -29,6 +29,9 @@ from tractolearn.logger import LoggerKeys, _set_up_logger
 from tractolearn.models.autoencoding_utils import encode_data
 from tractolearn.models.model_pool import get_model
 from tractolearn.tractoio.utils import (
+    assert_bundle_datum_exists,
+    assert_tractogram_exists,
+    filter_filenames,
     load_ref_anat_image,
     load_streamlines,
     read_data_from_json_file,
@@ -331,14 +334,25 @@ def _build_arg_parser():
     add_overwrite_arg(parser)
     add_verbose_arg(parser)
 
-    return parser.parse_args()
+    return parser
 
 
 def main():
-    args = _build_arg_parser()
-    device = torch.device(args.device)
+
+    parser = _build_arg_parser()
+    args = parser.parse_args()
 
     print(args)
+
+    streamline_classes = read_data_from_json_file(args.anatomy_file)
+
+    # Get the bundles of interest
+    boi = list(streamline_classes.keys())
+
+    assert_tractogram_exists(parser, args.atlas_path, boi)
+
+    thresholds = read_data_from_json_file(args.thresholds_file)
+    assert_bundle_datum_exists(parser, thresholds, boi)
 
     if exists(args.output):
         if not args.overwrite:
@@ -366,6 +380,8 @@ def main():
             f"Please specify a number between 1 and 30. Got {args.num_neighbors}. "
         )
 
+    device = torch.device(args.device)
+
     logging.info(args)
 
     _set_up_logger(pjoin(args.output, LoggerKeys.logger_file_basename.name))
@@ -379,27 +395,20 @@ def main():
     model.load_state_dict(state_dict)
     model.eval()
 
-    streamline_classes = read_data_from_json_file(args.anatomy_file)
-
-    thresholds = read_data_from_json_file(args.thresholds_file)
-
     latent_atlas_all = np.empty((0, 32))
     y_latent_atlas_all = np.empty((0,))
 
-    atlas_file = os.listdir(args.atlas_path)
+    # Filter the atlas filenames according to the bundles of interest
+    foi = filter_filenames(args.atlas_path, boi)
 
     logger.info("Loading atlas files ...")
 
-    for f in tqdm(atlas_file):
+    for f in tqdm(foi):
 
         key = f.split(".")[-2]
 
-        assert (
-            key in thresholds.keys()
-        ), f"[!] Threshold: {key} not in threshold file"
-
         X_a_not_flipped, y_a_not_flipped = load_streamlines(
-            pjoin(args.atlas_path, f),
+            f,
             args.common_space_reference,
             streamline_classes[key],
             resample=True,
@@ -407,7 +416,7 @@ def main():
         )
 
         X_a_flipped, y_a_flipped = load_streamlines(
-            pjoin(args.atlas_path, f),
+            f,
             args.common_space_reference,
             streamline_classes[key],
             resample=True,
