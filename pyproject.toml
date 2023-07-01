@@ -66,6 +66,12 @@ dev = [
     "isort == 5.12.0",
     "pre-commit >= 2.9.0",
 ]
+doc = [
+    "sphinx",
+    "sphinx-autodoc-typehints",
+    "sphinx-rtd-theme",
+    # "toml",
+]
 
 [project.scripts]
 ae_bundle_streamlines = "scripts:ae_bundle_streamlines.main"
