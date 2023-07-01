@@ -12,7 +12,7 @@ build:
     python: "3.10"
   jobs:
     pre_create_environment:
-      - sudo apt install libblas-dev liblapack-dev
+      - apt install libblas-dev liblapack-dev
 
 # Build documentation in the doc/ directory with Sphinx
 sphinx:
