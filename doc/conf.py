@@ -12,7 +12,7 @@
 #
 import os
 from datetime import datetime
-from importlib.metadata import version
+from importlib.metadata import version as vers
 
 # import sys
 import tomli
@@ -31,7 +31,7 @@ _email = info["project"]["authors"][1]["email"]
 copyright = f"2022-{datetime.now().year}, {_author}s <{_email}s>"
 author = f"{_author}s"
 
-_version = version(project)
+_version = vers(project)
 # The full version, including alpha/beta/rc tags
 release = _version
 
