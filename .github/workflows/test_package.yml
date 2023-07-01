@@ -15,7 +15,7 @@ jobs:
       # max-parallel: 6
       matrix:
         os: [ubuntu-latest]
-        python-version: [3.8]
+        python-version: ['3.10']
         requires: ['minimal', 'latest']
 
     steps:
@@ -53,16 +53,6 @@ jobs:
         python -m pip install --upgrade --user pip
         pip install setuptools tox
         pip install -e .[test]
-        # Force upgrading packages to workaround the `scilpy` requested versions
-        pip install --upgrade matplotlib==3.1.0
-        pip install --upgrade numpy==1.23.0
-        # Force upgrading packages to avoid numpy-related built-in type deprecation warnings
-        pip install --upgrade dipy==1.4.1
-        pip install --upgrade fury==0.7.1
-        pip install --upgrade h5py==3.0.0
-        pip install --upgrade nibabel==3.2.1
-        pip install --upgrade scikit-learn==0.24.0
-        pip install --upgrade scipy==1.7.0
         python --version
         pip --version
         pip list
