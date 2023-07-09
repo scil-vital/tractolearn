@@ -256,7 +256,7 @@ def main():
     shutil.copy(args.config_file, experiment_dir)
     device = config[ThresholdTestKeys.DEVICE]
 
-    logger_fname = pjoin(experiment_dir, LoggerKeys.logger_file_basename.name)
+    logger_fname = pjoin(experiment_dir, LoggerKeys.logger_file_basename.value)
     _set_up_logger(logger_fname)
 
     if args.verbose:
@@ -453,10 +453,10 @@ def main():
     streamlines_dict["implausible"] = (X_impl, y_impl)
 
     fname_root = pjoin(
-        experiment_dir, LoggerKeys.latent_plot_fname_label + "_trk"
+        experiment_dir, LoggerKeys.latent_plot_fname_label.value + "_trk"
     )
     fname_root_atlas = pjoin(
-        experiment_dir, LoggerKeys.latent_plot_fname_label + "_trk_atlas"
+        experiment_dir, LoggerKeys.latent_plot_fname_label.value + "_trk_atlas"
     )
 
     if config[ThresholdTestKeys.VIZ]:

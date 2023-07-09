@@ -87,7 +87,7 @@ def main():
     )
 
     logger_fname = pjoin(
-        experiment.experiment_dir, LoggerKeys.logger_file_basename.name
+        experiment.experiment_dir, LoggerKeys.logger_file_basename.value
     )
     _set_up_logger(logger_fname)
 

@@ -368,7 +368,7 @@ def main():
 
     logging.info(args)
 
-    _set_up_logger(pjoin(args.output, LoggerKeys.logger_file_basename.name))
+    _set_up_logger(pjoin(args.output, LoggerKeys.logger_file_basename.value))
 
     checkpoint = torch.load(
         args.model,
