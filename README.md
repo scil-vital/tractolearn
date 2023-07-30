@@ -118,4 +118,4 @@ This software is distributed under a particular license. Please see the
 [FINTA]: ./doc/bibtex/Legarreta21_-_MIA_-_FINTA.bib "Filtering in tractography using autoencoders (FINTA)"
 [CINTA]: ./doc/bibtex/Legarreta22_-_MICCAI-CDMRI_-_CINTA.bib "Clustering in Tractography Using Autoencoders (CINTA)"
 [GESTA]: ./doc/bibtex/Legarreta23_-_MIA_-_GESTA.bib "Generative Sampling in Bundle Tractography using Autoencoders (GESTA)"
-[FIESTA]: ./doc/bibtex/Dumais22_-_arXiv_-_FIESTA.bib "FIESTA: Autoencoders for accurate fiber segmentation in tractography"
+[FIESTA]: ./doc/bibtex/Dumais23_-_Neuroimage_-_FIESTA.bib "FIESTA: Autoencoders for accurate fiber segmentation in tractography"
