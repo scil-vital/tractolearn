@@ -17,6 +17,7 @@ from tractolearn.anatomy import BundleSettings
 from tractolearn.anatomy.bundles_additional_labels import (
     BundlesAdditionalLabels,
 )
+from tractolearn.tractoio.file_extensions import fname_sep
 from tractolearn.transformation.streamline_transformation import (
     flip_random_streamlines,
     flip_streamlines,
@@ -63,6 +64,177 @@ structural_data_dir_label = "structural"
 diffusion_data_dir_label = "diffusion"
 surface_data_dir_label = "surface"
 transformation_data_dir_label = "transformation"
+
+
+def identify_missing_tractogram(dirname, bundle_names):
+    """Identify bundles whose tractograms are missing. Assumes exact matches
+    in the filename root.
+
+    Parameters
+    ----------
+    dirname : Path
+        Dirname
+    bundle_names : list
+        Bundle names.
+
+    Returns
+    -------
+    list
+        Missing bundle names.
+    """
+
+    fname_comps = [
+        os.path.splitext(os.path.basename(fname))
+        for fname in sorted(os.listdir(dirname))
+    ]
+
+    return sorted(set(bundle_names).difference(list(zip(*fname_comps))[0]))
+
+
+def identify_missing_bundle(data, bundle_names):
+    """Identifies bundles whose data are missing. Assumes exact matches in the
+    filename root.
+
+    Parameters
+    ----------
+    data : dict
+        Data.
+    bundle_names : list
+        Bundle names.
+
+    Returns
+    -------
+    list
+        Missing bundle names.
+    """
+
+    return sorted(set(bundle_names).difference(data.keys()))
+
+
+def assert_tractogram_exists(parser, dirname, bundle_names):
+    """Assert that all tractograms corresponding to the given bundles exist.
+    Assumes exact matches in the filename root.
+
+    Parameters
+    ----------
+    parser : ArgumentParser
+        Parser.
+    dirname : Path
+        Dirname.
+    bundle_names : str
+        Bundle names.
+
+    Returns
+    -------
+    Raises an error if missing bundles.
+    """
+
+    missing = identify_missing_tractogram(dirname, bundle_names)
+    if missing:
+        parser.error(
+            "Tractograms corresponding to the following bundles are missing:\n"
+            + ", ".join(missing)
+        )
+
+
+def assert_bundle_datum_exists(parser, data, bundle_names):
+    """Assert that all data corresponding to the given bundles exist. Assumes
+    exact matches in the filename root.
+
+    Parameters
+    ----------
+    parser : ArgumentParser
+        Parser.
+    data : dict
+        Data.
+    bundle_names : str
+        Bundle names.
+
+    Returns
+    -------
+    Raises an error if missing bundles.
+    """
+
+    missing = identify_missing_bundle(data, bundle_names)
+    if missing:
+        parser.error(
+            "Data corresponding to the following bundles are missing:\n"
+            + ", ".join(missing)
+        )
+
+
+def compose_filename(dirname, file_rootname, file_ext):
+    """Compose filename given a dirname, a rootname and an extension.
+
+    Parameters
+    ----------
+    dirname : Path
+        Dirname.
+    file_rootname : str
+        File rootname.
+    file_ext : str
+        File extension.
+
+    Returns
+    -------
+    str
+        Filename.
+    """
+
+    return os.path.join(dirname, file_rootname + fname_sep + file_ext)
+
+
+def retrieve_matching_indices(a, b):
+    """Retrieve indices of the candidate items that match exactly with any of
+    the query items.
+
+    Parameters
+    ----------
+    a : list
+        Candidate items.
+    b : list
+        Query items.
+
+    Returns
+    -------
+    list
+        Indices of the relevant matches in a.
+    """
+
+    b_set = set(b)
+    return [i for i, v in enumerate(a) if v in b_set]
+
+
+def filter_filenames(path, bundle_names):
+    """Filter the relevant filenames in a path according to the provided bundle
+    names of interest. Assumes exact matches in the filename root. Filenames
+    are returned in sorted order.
+
+    Parameters
+    ----------
+    path : Path
+        Folder name.
+    bundle_names : list
+        Bundle names.
+
+    Returns
+    -------
+    list
+        Filenames corresponding to the bundles of interest.
+    """
+
+    fname_comps = [
+        os.path.splitext(os.path.basename(fname))
+        for fname in sorted(os.listdir(path))
+    ]
+
+    match_idx = retrieve_matching_indices(
+        list(zip(*fname_comps))[0], bundle_names
+    )
+    fname_comp_match = [fname_comps[i] for i in match_idx]
+
+    # Compose the relevant filenames back
+    return [os.path.join(path, item[0] + item[1]) for item in fname_comp_match]
 
 
 def load_bundles_dict(dataset_name):
