@@ -329,8 +329,7 @@ def _make_fetcher(
     return fetcher
 
 
-fetch_bundle_label_config = (
-    "fetch_bundle_label_config",
+bundle_label_config = (
     TRACTOLEARN_DATASETS_URL + "/7562790/files/",
     ["rbx_atlas_v10.json"],
     ["rbx_atlas_v10.json"],
@@ -341,32 +340,29 @@ fetch_bundle_label_config = (
     False,
 )
 
-fetch_contrastive_ae_weights = (
-    "fetch_contrastive_ae_weights",
+contrastive_ae_weights = (
     TRACTOLEARN_DATASETS_URL + "7562790/files/",
     ["best_model_contrastive_tractoinferno_hcp.pt"],
     ["best_model_contrastive_tractoinferno_hcp.pt"],
     ["2181aa950d8110b89f5b4bf7ebbb9aff"],
-    "Download contrastive-loss trained tractolearn autoencoder weights",
+    "Contrastive-loss trained tractolearn autoencoder weights",
     "56.7MB",
     "",
     False,
 )
 
-fetch_mni2009cnonlinsymm_anat = (
-    "fetch_mni2009cnonlinsymm_anat",
+mni2009cnonlinsymm_anat = (
     TRACTOLEARN_DATASETS_URL + "7562790/files/",
     ["mni_masked.nii.gz"],
     ["mni_masked.nii.gz"],
     ["ea6c119442d23a25033de19b55c607d3"],
-    "Download MNI ICBM 2009c Nonlinear Symmetric 1×1x1mm template dataset",
+    "MNI ICBM 2009c Nonlinear Symmetric 1×1x1mm template dataset",
     "4.9MB",
     "",
     False,
 )
 
-fetch_generative_loa_cone_config = (
-    "fetch_generative_loa_cone_config",
+generative_loa_cone_config = (
     TRACTOLEARN_DATASETS_URL + "/7562790/files/",
     ["degree.json"],
     ["degree.json"],
@@ -377,8 +373,7 @@ fetch_generative_loa_cone_config = (
     False,
 )
 
-fetch_generative_seed_streamline_ratio_config = (
-    "fetch_generative_seed_streamline_ratio_config",
+generative_seed_streamline_ratio_config = (
     TRACTOLEARN_DATASETS_URL + "/7562790/files/",
     ["ratio.json"],
     ["ratio.json"],
@@ -389,8 +384,7 @@ fetch_generative_seed_streamline_ratio_config = (
     False,
 )
 
-fetch_generative_streamline_max_count_config = (
-    "fetch_generative_streamline_max_count_config",
+generative_streamline_max_count_config = (
     TRACTOLEARN_DATASETS_URL + "/7562790/files/",
     ["max_total_sampling.json"],
     ["max_total_sampling.json"],
@@ -401,8 +395,7 @@ fetch_generative_streamline_max_count_config = (
     False,
 )
 
-fetch_generative_streamline_req_count_config = (
-    "fetch_generative_streamline_req_count_config",
+generative_streamline_req_count_config = (
     TRACTOLEARN_DATASETS_URL + "/7562790/files/",
     ["number_rejection_sampling.json"],
     ["number_rejection_sampling.json"],
@@ -413,8 +406,7 @@ fetch_generative_streamline_req_count_config = (
     False,
 )
 
-fetch_generative_wm_tisue_criterion_config = (
-    "fetch_generative_wm_tisue_criterion_config",
+generative_wm_tisue_criterion_config = (
     TRACTOLEARN_DATASETS_URL + "/7562790/files/",
     ["white_matter_mask.json"],
     ["white_matter_mask.json"],
@@ -425,32 +417,29 @@ fetch_generative_wm_tisue_criterion_config = (
     False,
 )
 
-fetch_recobundlesx_atlas = (
-    "fetch_recobundlesx_atlas",
+recobundlesx_atlas = (
     TRACTOLEARN_DATASETS_URL + "7562635/files/",
     ["atlas.zip"],
     ["atlas.zip"],
     ["0d2857efa7cfda6f57e5abcad4717c2a"],
-    "Download RecoBundlesX population average and centroid tractograms",
+    "RecoBundlesX population average and centroid tractograms",
     "159.0MB",
     "",
     True,
 )
 
-fetch_recobundlesx_config = (
-    "fetch_recobundlesx_config",
+recobundlesx_config = (
     TRACTOLEARN_DATASETS_URL + "7562635/files/",
     ["config.zip"],
     ["config.zip"],
     ["439e2488597243455872ec3dcb50eda7"],
-    "Download RecoBundlesX clustering parameter values",
+    "RecoBundlesX clustering parameter values",
     "3.6KB",
     "",
     True,
 )
 
-fetch_tractoinferno_hcp_contrastive_threshold_config = (
-    "fetch_tractoinferno_hcp_contrastive_threshold_config",
+tractoinferno_hcp_contrastive_threshold_config = (
     TRACTOLEARN_DATASETS_URL + "/7562790/files/",
     ["thresholds_contrastive_tractoinferno_hcp.json"],
     ["thresholds_contrastive_tractoinferno_hcp.json"],
@@ -461,17 +450,96 @@ fetch_tractoinferno_hcp_contrastive_threshold_config = (
     False,
 )
 
-fetch_tractoinferno_hcp_ref_tractography = (
-    "fetch_tractoinferno_hcp_ref_tractography",
+tractoinferno_hcp_ref_tractography = (
     TRACTOLEARN_DATASETS_URL + "/7562790/files/",
     ["data_tractoinferno_hcp_qbx.hdf5"],
     ["data_tractoinferno_hcp_qbx.hdf5"],
     ["4803d36278d1575a40e9048a7380aa10"],
-    "Download TractoInferno-HCP reference tractography dataset",
+    "TractoInferno-HCP reference tractography dataset",
     "74.0GB",
     "",
     False,
 )
+
+
+def _get_fetcher_data(name):
+    """Provide the fetcher method parameters corresponding to the method name.
+
+    Returns
+    -------
+    Tuple
+        Fetcher method parameters.
+    """
+
+    if name == Dataset.BUNDLE_LABEL_CONFIG.name:
+        return bundle_label_config
+    elif name == Dataset.CONTRASTIVE_AUTOENCODER_WEIGHTS.name:
+        return contrastive_ae_weights
+    elif name == Dataset.MNI2009CNONLINSYMM_ANAT.name:
+        return mni2009cnonlinsymm_anat
+    elif name == Dataset.GENERATIVE_LOA_CONE_CONFIG.name:
+        return generative_loa_cone_config
+    elif name == Dataset.GENERATIVE_SEED_STRML_RATIO_CONFIG.name:
+        return generative_seed_streamline_ratio_config
+    elif name == Dataset.GENERATIVE_STRML_MAX_COUNT_CONFIG.name:
+        return generative_streamline_max_count_config
+    elif name == Dataset.GENERATIVE_STRML_RQ_COUNT_CONFIG.name:
+        return generative_streamline_req_count_config
+    elif name == Dataset.GENERATIVE_WM_TISSUE_CRITERION_CONFIG.name:
+        return generative_wm_tisue_criterion_config
+    elif name == Dataset.RECOBUNDLESX_ATLAS.name:
+        return recobundlesx_atlas
+    elif name == Dataset.RECOBUNDLESX_CONFIG.name:
+        return recobundlesx_config
+    elif name == Dataset.TRACTOINFERNO_HCP_CONTRASTIVE_THR_CONFIG.name:
+        return tractoinferno_hcp_contrastive_threshold_config
+    elif name == Dataset.TRACTOINFERNO_HCP_REF_TRACTOGRAPHY.name:
+        return tractoinferno_hcp_ref_tractography
+    else:
+        raise DatasetError(_unknown_dataset_msg(name))
+
+
+def _compose_fetcher_name(name):
+    """Compose a name for the fetcher given the dataset name.
+
+    Parameters
+    ----------
+    name : string
+        Dataset name.
+    Returns
+    -------
+    string
+        Fetcher name for dataset.
+    """
+
+    return "fetcher_" + Dataset[name].value
+
+
+def provide_dataset_description():
+    """Provide the description of the available datasets.
+
+    Returns
+    -------
+    descr : list
+        Dataset value, description and URL tuples.
+    """
+
+    url_idx = 1
+    descr_idx = 5
+    descr = list()
+
+    for elem in list(Dataset):
+        params = _get_fetcher_data(elem.name)
+        descr.append(
+            elem.value
+            + ": "
+            + params[descr_idx]
+            + ": "
+            + params[url_idx]
+            + "\n"
+        )
+
+    return descr
 
 
 def retrieve_dataset(name, path):
@@ -492,42 +560,15 @@ def retrieve_dataset(name, path):
 
     logger.info(f"\nDataset: {name}")
 
-    if name == Dataset.BUNDLE_LABEL_CONFIG.name:
-        params = fetch_bundle_label_config
-        files, folder = _make_fetcher(path, *params)()
-        return pjoin(folder, list(files.keys())[0])
-    elif name == Dataset.CONTRASTIVE_AUTOENCODER_WEIGHTS.name:
-        params = fetch_contrastive_ae_weights
-        files, folder = _make_fetcher(path, *params)()
-        return pjoin(folder, list(files.keys())[0])
-    elif name == Dataset.MNI2009CNONLINSYMM_ANAT.name:
-        params = fetch_mni2009cnonlinsymm_anat
-        files, folder = _make_fetcher(path, *params)()
-        return pjoin(folder, list(files.keys())[0])
-    elif name == Dataset.GENERATIVE_LOA_CONE_CONFIG.name:
-        params = fetch_generative_loa_cone_config
-        files, folder = _make_fetcher(path, *params)()
-        return pjoin(folder, list(files.keys())[0])
-    elif name == Dataset.GENERATIVE_SEED_STRML_RATIO_CONFIG.name:
-        params = fetch_generative_seed_streamline_ratio_config
-        files, folder = _make_fetcher(path, *params)()
-        return pjoin(folder, list(files.keys())[0])
-    elif name == Dataset.GENERATIVE_STRML_MAX_COUNT_CONFIG.name:
-        params = fetch_generative_streamline_max_count_config
-        files, folder = _make_fetcher(path, *params)()
-        return pjoin(folder, list(files.keys())[0])
-    elif name == Dataset.GENERATIVE_STRML_RQ_COUNT_CONFIG.name:
-        params = fetch_generative_streamline_req_count_config
-        files, folder = _make_fetcher(path, *params)()
-        return pjoin(folder, list(files.keys())[0])
-    elif name == Dataset.GENERATIVE_WM_TISSUE_CRITERION_CONFIG.name:
-        params = fetch_generative_wm_tisue_criterion_config
-        files, folder = _make_fetcher(path, *params)()
-        return pjoin(folder, list(files.keys())[0])
-    elif name == Dataset.RECOBUNDLESX_ATLAS.name:
-        params = fetch_recobundlesx_atlas
-        files, folder = _make_fetcher(path, *params)()
-        fnames = files["atlas.zip"][2]
+    params = _get_fetcher_data(name)
+    fetcher_name = _compose_fetcher_name(name)
+    files, folder = _make_fetcher(path, fetcher_name, *params)()
+
+    file_basename = list(files.keys())[0]
+
+    # Check if the file is a ZIP file
+    if zipfile.is_zipfile(pjoin(folder, file_basename)):
+        fnames = files[file_basename][1]
         return sorted(
             [
                 pjoin(folder, f)
@@ -535,18 +576,5 @@ def retrieve_dataset(name, path):
                 if os.path.isfile(pjoin(folder, f))
             ]
         )
-    elif name == Dataset.RECOBUNDLESX_CONFIG.name:
-        params = fetch_recobundlesx_config
-        files, folder = _make_fetcher(path, *params)()
-        fnames = files["config.zip"][2]
-        return sorted([pjoin(folder, f) for f in fnames])
-    elif name == Dataset.TRACTOINFERNO_HCP_CONTRASTIVE_THR_CONFIG.name:
-        params = fetch_tractoinferno_hcp_contrastive_threshold_config
-        files, folder = _make_fetcher(path, *params)()
-        return pjoin(folder, list(files.keys())[0])
-    elif name == Dataset.TRACTOINFERNO_HCP_REF_TRACTOGRAPHY.name:
-        params = fetch_tractoinferno_hcp_ref_tractography
-        files, folder = _make_fetcher(path, *params)()
-        return pjoin(folder, list(files.keys())[0])
     else:
-        raise DatasetError(_unknown_dataset_msg(name))
+        return pjoin(folder, file_basename)
