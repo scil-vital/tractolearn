@@ -2,6 +2,7 @@
 import itertools
 import logging
 import sys
+import typing
 from os.path import join as pjoin
 from typing import Tuple
 
@@ -42,7 +43,7 @@ class Trainer:
         input_size: Tuple[int, int],
         isocenter: np.array,
         volume: np.array,
-        experiment_recorder: Experiment,
+        experiment_recorder: typing.Union[Experiment, None],
     ):
 
         self._device = device
