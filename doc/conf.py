@@ -28,7 +28,7 @@ with open(os.path.join("..", "pyproject.toml"), "rb") as f:
 project = info["project"]["name"]
 _author = info["project"]["authors"][0]["name"]
 _email = info["project"]["authors"][1]["email"]
-copyright = f"2022-{datetime.now().year}, {_author}s <{_email}s>"
+copyright = f"2022-{datetime.now().year}, {_author} <{_email}>"
 author = f"{_author}s"
 
 _version = vers(project)
