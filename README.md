@@ -10,7 +10,7 @@
 
 Tractography learning.
 
-- Documentation: https://tractolearn.readthedocs.io/en/latest/
+- [Documentation](https://tractolearn.readthedocs.io/en/latest/)
 - [Contributing](.github/CONTRIBUTING.rst)
 
 
