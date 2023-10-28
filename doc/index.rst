@@ -1,6 +1,8 @@
 Welcome to the tractolearn documentation!
 =========================================
 
+Tractography learning.
+
 .. toctree::
    :maxdepth: 1
    :caption: Reference
