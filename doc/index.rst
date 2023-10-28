@@ -2,7 +2,13 @@ Welcome to the tractolearn documentation!
 =========================================
 
 .. toctree::
-    :maxdepth: 1
+   :maxdepth: 1
+   :caption: Reference
 
-    modules/tractolearn
-    scripts/modules
+   tractolearn
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Scripts
+
+   scripts
