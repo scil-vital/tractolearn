@@ -68,6 +68,7 @@ dev = [
 ]
 doc = [
     "sphinx < 7.0.0", # 7.0.0 is incompatible with rtd-theme
+    "sphinx-argparse",
     "sphinx-autodoc-typehints",
     "sphinx-rtd-theme",
     # "toml",
