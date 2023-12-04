@@ -20,3 +20,9 @@ Tractography learning.
    :caption: Contributing
 
    ../devel/coding_style_guideline
+
+Indices and tables
+==================
+
+* :ref:`genindex`
+* :ref:`modindex`
