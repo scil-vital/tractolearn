@@ -15,6 +15,13 @@ Tractography learning.
 
    scripts
 
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Contributing
+
+   devel/coding_style_guideline
+
 Indices and tables
 ==================
 
