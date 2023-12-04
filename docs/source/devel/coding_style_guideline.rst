@@ -1,6 +1,6 @@
-==================================
-tractolearn Coding Style Guideline
-==================================
+======================
+Coding style guideline
+======================
 
 The main principles behind tractolearn development are:
 
