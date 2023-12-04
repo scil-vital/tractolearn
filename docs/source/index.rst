@@ -14,3 +14,9 @@ Tractography learning.
    :caption: Scripts
 
    scripts
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Contributing
+
+   ../devel/coding_style_guideline
