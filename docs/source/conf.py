@@ -11,16 +11,17 @@
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 import os
+import sys
 from datetime import datetime
 from importlib.metadata import version as vers
 
-# import sys
 import tomli
 
-# sys.path.insert(0, os.path.abspath('.'))
+# Location of files where Sphinx will look for docstrings
+sys.path.insert(0, os.path.abspath(".."))
 
 # Load the release info into a dict by explicit execution
-with open(os.path.join("..", "pyproject.toml"), "rb") as f:
+with open(os.path.join("../..", "pyproject.toml"), "rb") as f:
     info = tomli.load(f)
 
 # -- Project information -----------------------------------------------------
